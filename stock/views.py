@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import boto3
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
 from rest_framework import generics, permissions
@@ -38,6 +38,7 @@ from .serializers import (
     BiddingExemptionSerializer,
     CategorySerializer,
     DispatchReportSerializer,
+    EmailSerializer,
     InvoiceSerializer,
     MeasureSerializer,
     ProductSerializer,
@@ -59,7 +60,7 @@ from .serializers import (
     SectorSerializer,
     StockItemSerializer,
     StockSerializer,
-    SupplierSerializer, EmailSerializer,
+    SupplierSerializer,
 )
 from .services import get_protocol_item_quantity, get_stock_item_quantity
 
@@ -1127,9 +1128,9 @@ class EmailView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        subject = serializer.validated_data['subject']
-        message = serializer.validated_data['message']
-        recipients = Client.objects.values_list('email', flat=True)
+        subject = serializer.validated_data["subject"]
+        message = serializer.validated_data["message"]
+        recipients = Client.objects.values_list("email", flat=True)
         from_email = os.environ.get("EMAIL_HOST_USER")
         email = EmailMultiAlternatives(
             subject=subject,
@@ -1139,4 +1140,4 @@ class EmailView(generics.GenericAPIView):
             reply_to=[from_email],
         )
         email.send()
-        return Response({'message': 'Email sent successfully'})
+        return Response({"message": "Email sent successfully"})
