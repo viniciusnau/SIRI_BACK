@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    container_name: SIRI_DATABASE
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=SIRI_BACK
+      - POSTGRES_PASSWORD=SCR@01090!qwer
+      - POSTGRES_DB=SIRI_DB_LOCAL
+    volumes:
+      - ./SIRI_DB:/var/lib/postgresql/data
+    restart: always
+
+  web:
+    build: .
+    container_name: SIRI_SERVER
+    command: sh -c "
+      python manage.py makemigrations user &&
+      python manage.py makemigrations order &&
+      python manage.py makemigrations stock &&
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+    restart: always

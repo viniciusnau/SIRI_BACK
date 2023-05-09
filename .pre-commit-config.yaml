@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 22.3.0
+    hooks:
+      - id: black
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
+        args: ['--ignore=F405,W503,DJ01', '--max-line-length=119', '--max-complexity=10']
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.6.2
+    hooks:
+      - id: bandit
+        args: [ '-iii', '-ll' ]
