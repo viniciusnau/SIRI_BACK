@@ -479,3 +479,8 @@ class AccountantReportCategorySerializer(serializers.Serializer):
     balance = serializers.DecimalField(max_digits=18, decimal_places=2)
     previous_balance = serializers.DecimalField(max_digits=18, decimal_places=2)
     current_balance = serializers.DecimalField(max_digits=18, decimal_places=2)
+
+
+class EmailSerializer(serializers.Serializer):
+    subject = serializers.CharField()
+    message = serializers.CharField()

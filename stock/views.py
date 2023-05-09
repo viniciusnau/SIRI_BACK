@@ -4,6 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import boto3
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
 from rest_framework import generics, permissions
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from order.models import StockEntry, StockWithdrawal
+from user.models import Client
 
 from .models import (
     AccountantReport,
@@ -57,7 +59,7 @@ from .serializers import (
     SectorSerializer,
     StockItemSerializer,
     StockSerializer,
-    SupplierSerializer,
+    SupplierSerializer, EmailSerializer,
 )
 from .services import get_protocol_item_quantity, get_stock_item_quantity
 
@@ -1117,3 +1119,24 @@ class WarehouseItems(APIView):
             response_data.append(item_data)
 
         return Response(response_data)
+
+
+class EmailView(generics.GenericAPIView):
+    serializer_class = EmailSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        subject = serializer.validated_data['subject']
+        message = serializer.validated_data['message']
+        recipients = Client.objects.values_list('email', flat=True)
+        from_email = os.environ.get("EMAIL_HOST_USER")
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=message,
+            from_email=from_email,
+            to=recipients,
+            reply_to=[from_email],
+        )
+        email.send()
+        return Response({'message': 'Email sent successfully'})

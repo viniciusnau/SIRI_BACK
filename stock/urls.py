@@ -32,7 +32,7 @@ from .views import (
     StockRetrieveUpdateDestroyView,
     SupplierListCreateView,
     SupplierRetrieveUpdateDestroyView,
-    WarehouseItems,
+    WarehouseItems, EmailView,
 )
 
 app_name = "stock"
@@ -148,4 +148,5 @@ urlpatterns = [
     ),
     path("stock-report/", StockReport.as_view(), name="stock_report"),
     path("warehouse-items/", WarehouseItems.as_view(), name="warehouse_items"),
+    path('email/', EmailView.as_view()),
 ]
