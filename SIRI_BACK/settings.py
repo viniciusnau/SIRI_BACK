@@ -3,8 +3,6 @@ from pathlib import Path
 
 import corsheaders
 import dotenv
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
 
 dotenv.load_dotenv()
 
@@ -94,23 +92,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 2,
-}
-
-SWAGGER_SETTINGS = {
-    "DEFAULT_INFO": openapi.Info(
-        title="SIRI",
-        default_version="v1",
-        description="SIRI is a Django-based project developed for DPESC, aimed at efficiently managing internal "
-        "processes within the organization.",
-        terms_of_service="",
-        contact=openapi.Contact(email="suporte-getig@defensoria.sc.gov.br"),
-        license=openapi.License(name=""),
-    ),
 }
 
 LANGUAGE_CODE = "en-us"
