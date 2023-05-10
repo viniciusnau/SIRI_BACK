@@ -73,7 +73,7 @@ git pull
 ```
 Then control + shift + v into the terminal to create a new branch from developer with the card's name.
 
-After completing the task, make sure to run:
+After completing the task, update Swagger and make sure to run:
 ```bash
 make all
 ```
