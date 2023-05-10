@@ -87,7 +87,7 @@ Create a Pull Request pointing base to developer.
 
 Move the task card to the "review" column.
 
-### Swagger Documentation
+## Swagger Documentation
 To access documentation, follow these steps:
 
 1. Ensure that the project is running and the API is accessible.
