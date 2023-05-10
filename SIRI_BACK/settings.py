@@ -3,7 +3,6 @@ from pathlib import Path
 
 import corsheaders
 import dotenv
-
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
@@ -103,11 +102,11 @@ REST_FRAMEWORK = {
 }
 
 SWAGGER_SETTINGS = {
-    'DEFAULT_INFO': openapi.Info(
+    "DEFAULT_INFO": openapi.Info(
         title="SIRI",
-        default_version='v1',
+        default_version="v1",
         description="SIRI is a Django-based project developed for DPESC, aimed at efficiently managing internal "
-                    "processes within the organization.",
+        "processes within the organization.",
         terms_of_service="",
         contact=openapi.Contact(email="suporte-getig@defensoria.sc.gov.br"),
         license=openapi.License(name=""),
