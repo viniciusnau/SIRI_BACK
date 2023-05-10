@@ -92,7 +92,7 @@ To access documentation, follow these steps:
 
 1. Ensure that the project is running and the API is accessible.
 2. Click the button below to access the backend documentation and interact with the available APIs:
-[![Swagger Documentation](https://img.shields.io/badge/Swagger-Documentation-blue.svg)](http://0.0.0.0:8000/swagger)
+[![Documentation](https://img.shields.io/badge/Swagger-Documentation-blue.svg)](http://0.0.0.0:8000/swagger)
 3. You will be presented with the Swagger UI, which lists all the available endpoints.
 4. Explore the APIs by expanding the endpoints and clicking on them to view details such as request/response parameters, headers, and example payloads.
 5. To test an endpoint, click on the "Try it out" button, enter the required input parameters, and click "Execute" to see the response.
