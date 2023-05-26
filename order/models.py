@@ -37,6 +37,11 @@ class OrderItem(models.Model):
     added_quantity = models.PositiveIntegerField(default=0)
     supplier_quantity = models.PositiveIntegerField(default=0)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-created",)
 
     def __str__(self):
         return (
@@ -60,6 +65,11 @@ class StockWithdrawal(models.Model):
     withdraw_quantity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     withdraw_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-created",)
 
     def __str__(self):
         return f"StockWithdrawal {self.id}"
@@ -73,6 +83,8 @@ class StockEntry(models.Model):
     entry_quantity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     entry_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     class Meta:
         constraints = [
@@ -80,6 +92,7 @@ class StockEntry(models.Model):
                 fields=["order_item"], name="%(app_label)s_%(class)s_unique"
             )
         ]
+        ordering = ("-created",)
 
     def __str__(self):
         return f"StockEntry {self.id}"
@@ -108,6 +121,11 @@ class SupplierOrderItem(models.Model):
         Product, related_name="supplier_order_item", on_delete=models.CASCADE
     )
     quantity = models.PositiveIntegerField(default=1)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-created",)
 
     def __str__(self):
         return f"SupplierOrderItem {self.id}"
@@ -120,6 +138,11 @@ class ProtocolWithdrawal(models.Model):
     withdraw_quantity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True, null=True)
     withdraw_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-created",)
 
     def __str__(self):
         return f"ProtocolWithdrawal {self.id}"
@@ -132,6 +155,9 @@ class MaterialsOrder(models.Model):
     date_range = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("-created",)
 
     def __str__(self):
         return f"MaterialsOrder {self.id}"
