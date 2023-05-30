@@ -153,8 +153,8 @@ class MaterialsOrder(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     file = models.TextField(blank=True, default=None, null=True)
     date_range = models.TextField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ("-created",)

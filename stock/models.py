@@ -1,14 +1,20 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class PublicDefense(models.Model):
     name = models.CharField("Name", max_length=255)
     district = models.CharField("District", max_length=255)
     address = models.CharField("Address", max_length=255)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class Sector(models.Model):
@@ -16,9 +22,14 @@ class Sector(models.Model):
     public_defense = models.ForeignKey(
         PublicDefense, on_delete=models.DO_NOTHING, related_name="sectors"
     )
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class Stock(models.Model):
@@ -29,6 +40,8 @@ class Stock(models.Model):
         null=False,
         related_name="stocks",
     )
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.sector.name + " - " + self.sector.public_defense.name
@@ -42,15 +55,18 @@ class Stock(models.Model):
                 name="%(app_label)s_%(class)s_unique",
             )
         ]
+        ordering = ("-created",)
 
 
 class Category(models.Model):
     name = models.CharField("Name", max_length=200)
     sector = models.ManyToManyField(Sector, related_name="Category")
     code = models.CharField("Code", max_length=200)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        ordering = ("name",)
+        ordering = ("-created",)
         verbose_name = "category"
         verbose_name_plural = "categories"
 
@@ -60,9 +76,14 @@ class Category(models.Model):
 
 class Measure(models.Model):
     name = models.CharField(max_length=255)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class Product(models.Model):
@@ -80,11 +101,14 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     code = models.CharField("Name", max_length=255)
     is_available = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class StockItem(models.Model):
@@ -93,8 +117,8 @@ class StockItem(models.Model):
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return (
@@ -104,6 +128,9 @@ class StockItem(models.Model):
             + " - "
             + self.product.name
         )
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class Supplier(models.Model):
@@ -116,18 +143,28 @@ class Supplier(models.Model):
     ein = models.CharField("Employer Identification Number", max_length=25)
     ssn = models.CharField("Social Security Number", max_length=25)
     nic = models.CharField("National Identity Card", max_length=25)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class Protocol(models.Model):
     code = models.CharField("Code", null=True, max_length=255)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.code
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class ProtocolItem(models.Model):
@@ -141,6 +178,8 @@ class ProtocolItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     original_quantity = models.PositiveIntegerField(default=0)
     quantity = models.PositiveIntegerField(default=0)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return (
@@ -150,6 +189,9 @@ class ProtocolItem(models.Model):
             + " - "
             + self.product.name
         )
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class Invoice(models.Model):
@@ -161,11 +203,14 @@ class Invoice(models.Model):
     total_value = models.DecimalField(
         max_digits=10, decimal_places=2, null=False, blank=False
     )
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.code
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class ReceivingReport(models.Model):
@@ -174,11 +219,14 @@ class ReceivingReport(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     file = models.TextField(blank=True, default=None, null=True)
     description = models.TextField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"ReceivingReport {self.id}"
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class DispatchReport(models.Model):
@@ -187,11 +235,14 @@ class DispatchReport(models.Model):
     public_defense = models.ForeignKey(PublicDefense, on_delete=models.CASCADE)
     file = models.TextField(blank=True, default=None, null=True)
     description = models.TextField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"DispatchReport {self.id}"
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class BiddingExemption(models.Model):
@@ -199,9 +250,14 @@ class BiddingExemption(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"BiddingExemption {self.id}"
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class AccountantReport(models.Model):
@@ -210,9 +266,14 @@ class AccountantReport(models.Model):
     total_entry_value = models.PositiveIntegerField(default=0)
     total_output_value = models.PositiveIntegerField(default=0)
     total_current_value = models.PositiveIntegerField(default=0)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"AccountantReport {self.id}"
+
+    class Meta:
+        ordering = ("-created",)
 
 
 class CategoryBalance(models.Model):
@@ -221,6 +282,11 @@ class CategoryBalance(models.Model):
     )
     date = models.DateField()
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    created = models.DateTimeField(default=timezone.now)
+    updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"CategoryBalance {self.id}"
+
+    class Meta:
+        ordering = ("-created",)
