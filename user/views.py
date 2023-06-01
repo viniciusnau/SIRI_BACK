@@ -31,13 +31,13 @@ from .serializers import ClientSerializer
 
 
 class ClientListCreateView(generics.ListCreateAPIView):
-    set = Client.objects.all()
+    queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [IsAdminUser]
 
 
 class ClientRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Client.objects.all()
+    set = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [IsAdminUser]
 
