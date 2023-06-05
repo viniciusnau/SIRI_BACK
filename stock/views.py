@@ -473,7 +473,9 @@ class BiddingExemptionListCreateView(generics.ListCreateAPIView):
         quantity = int(self.request.data.get("quantity"))
 
         if stock.id != warehouse.id:
-            stock_item = StockItem.objects.get_or_create(product=product, stock=stock)
+            stock_item, created = StockItem.objects.get_or_create(
+                product=product, stock=stock
+            )
             StockEntry.objects.create(stock_item=stock_item, entry_quantity=quantity)
             ReceivingReport.objects.create(
                 product=product, supplier=invoice.supplier, quantity=quantity

@@ -138,3 +138,12 @@ GitHub.sublime-settings
 .idea
 
 SIRI_DB/
+
+#AWS
+aws
+awscliv2.zip
+
+#Migrations
+order/migrations
+stock/migrations
+user/migrations
