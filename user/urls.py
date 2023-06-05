@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import ObtainAuthToken
-from swagger_config import schema_view
+
 from .views import (
     ClientListCreateView,
     ClientRetrieveUpdateDestroyView,
@@ -27,10 +27,4 @@ urlpatterns = [
         csrf_exempt(confirm_password_reset),
         name="confirm_password_reset",
     ),
-    path(
-        "swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
-    ),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]

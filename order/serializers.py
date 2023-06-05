@@ -192,4 +192,4 @@ class MaterialsOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MaterialsOrder
-        fields = ["id", "supplier", "file", "date_range", "created", "updated", "category"]
+        fields = ["id", "supplier", "file", "date_range", "created", "updated"]

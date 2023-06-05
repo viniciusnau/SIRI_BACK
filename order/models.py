@@ -87,12 +87,12 @@ class StockEntry(models.Model):
     updated = models.DateTimeField(default=timezone.now)
 
     class Meta:
+        ordering = ("-created",)
         constraints = [
             models.UniqueConstraint(
                 fields=["order_item"], name="%(app_label)s_%(class)s_unique"
             )
         ]
-        ordering = ("-created",)
 
     def __str__(self):
         return f"StockEntry {self.id}"
@@ -153,8 +153,8 @@ class MaterialsOrder(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     file = models.TextField(blank=True, default=None, null=True)
     date_range = models.TextField(blank=True)
-    created = models.DateTimeField(default=timezone.now)
-    updated = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ("-created",)

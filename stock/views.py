@@ -473,8 +473,8 @@ class BiddingExemptionListCreateView(generics.ListCreateAPIView):
         quantity = int(self.request.data.get("quantity"))
 
         if stock.id != warehouse.id:
-            stock_item = StockItem.objects.get_or_create(product=product, stock=stock)
-            StockEntry.objects.create(stock_item=stock_item[0], entry_quantity=quantity)
+            stock_item, created = StockItem.objects.get_or_create(product=product, stock=stock)
+            StockEntry.objects.create(stock_item=stock_item, entry_quantity=quantity)
             ReceivingReport.objects.create(
                 product=product, supplier=invoice.supplier, quantity=quantity
             )
@@ -528,6 +528,7 @@ class AccountantReportListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        date = request.query_params.get("date")
         if not date:
             queryset = self.get_queryset()
             serializer = self.serializer_class(queryset, many=True)

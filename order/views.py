@@ -476,6 +476,14 @@ class ProtocolWithdrawalListCreateView(generics.ListCreateAPIView):
     serializer_class = RetrieveProtocolWithdrawalSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def get_serializer_class(self):
         if self.request.method == "GET":
             return RetrieveProtocolWithdrawalSerializer

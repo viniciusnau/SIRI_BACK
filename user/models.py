@@ -13,6 +13,9 @@ class Client(models.Model):
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        ordering = ("-created",)
+
     def __str__(self):
         return (
             self.name
@@ -21,6 +24,3 @@ class Client(models.Model):
             + " - "
             + self.stock.sector.public_defense.name
         )
-
-    class Meta:
-        ordering = ("-created",)
