@@ -16,9 +16,9 @@ services:
     build: .
     container_name: SIRI_SERVER
     command: sh -c "
-      yes | python manage.py makemigrations user --merge &&
-      yes | python manage.py makemigrations order --merge &&
-      yes | python manage.py makemigrations stock --merge &&
+      python manage.py makemigrations user &&
+      python manage.py makemigrations order &&
+      python manage.py makemigrations stock &&
       python manage.py migrate &&
       python manage.py runserver 0.0.0.0:8000"
     volumes:
