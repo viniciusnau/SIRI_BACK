@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
+
 class PublicDefense(models.Model):
     name = models.CharField("Name", max_length=255)
     district = models.CharField("District", max_length=255)
