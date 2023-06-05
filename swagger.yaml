@@ -1,0 +1,2079 @@
+swagger: '2.0'
+info:
+  title: SIRI
+  description: SIRI is a Django-based project developed for DPESC, aimed at efficiently
+    managing internal processes within the organization.
+  termsOfService: ''
+  contact:
+    email: suporte-getig@defensoria.sc.gov.br
+  license:
+    name: ''
+  version: v1
+basePath: /
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /clients/:
+    get:
+      operationId: clients_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Client'
+      tags:
+        - clients
+    post:
+      operationId: clients_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Client'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Client'
+      tags:
+        - clients
+    parameters: []
+  /clients/{id}/:
+    get:
+      operationId: clients_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Client'
+      tags:
+        - clients
+    put:
+      operationId: clients_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Client'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Client'
+      tags:
+        - clients
+    patch:
+      operationId: clients_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Client'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Client'
+      tags:
+        - clients
+    delete:
+      operationId: clients_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - clients
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this client.
+        required: true
+        type: integer
+  /login/:
+    post:
+      operationId: login_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AuthToken'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/AuthToken'
+      tags:
+        - login
+    parameters: []
+  /me/:
+    get:
+      operationId: me_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Client'
+      tags:
+        - me
+    parameters: []
+  /order/:
+    get:
+      operationId: order_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/materials-order/:
+    get:
+      operationId: order_materials-order_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_materials-order_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/materials-order/{id}/:
+    get:
+      operationId: order_materials-order_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    put:
+      operationId: order_materials-order_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    patch:
+      operationId: order_materials-order_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    delete:
+      operationId: order_materials-order_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this materials order.
+        required: true
+        type: integer
+  /order/order-items/:
+    get:
+      operationId: order_order-items_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RetrieveOrderItem'
+      tags:
+        - order
+    post:
+      operationId: order_order-items_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      tags:
+        - order
+    parameters: []
+  /order/order-items/{id}/:
+    get:
+      operationId: order_order-items_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      tags:
+        - order
+    put:
+      operationId: order_order-items_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      tags:
+        - order
+    patch:
+      operationId: order_order-items_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/RetrieveOrderItem'
+      tags:
+        - order
+    delete:
+      operationId: order_order-items_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this order item.
+        required: true
+        type: integer
+  /order/protocol-withdrawals/:
+    get:
+      operationId: order_protocol-withdrawals_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_protocol-withdrawals_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/protocol-withdrawals/{id}/:
+    get:
+      operationId: order_protocol-withdrawals_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ProtocolWithdrawal'
+      tags:
+        - order
+    put:
+      operationId: order_protocol-withdrawals_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProtocolWithdrawal'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ProtocolWithdrawal'
+      tags:
+        - order
+    patch:
+      operationId: order_protocol-withdrawals_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProtocolWithdrawal'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ProtocolWithdrawal'
+      tags:
+        - order
+    delete:
+      operationId: order_protocol-withdrawals_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this protocol withdrawal.
+        required: true
+        type: integer
+  /order/stock-entries/:
+    get:
+      operationId: order_stock-entries_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_stock-entries_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/stock-entries/{id}/:
+    get:
+      operationId: order_stock-entries_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    put:
+      operationId: order_stock-entries_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    patch:
+      operationId: order_stock-entries_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    delete:
+      operationId: order_stock-entries_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this stock entry.
+        required: true
+        type: integer
+  /order/stock-withdrawals/:
+    get:
+      operationId: order_stock-withdrawals_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_stock-withdrawals_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/stock-withdrawals/{id}/:
+    get:
+      operationId: order_stock-withdrawals_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    put:
+      operationId: order_stock-withdrawals_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    patch:
+      operationId: order_stock-withdrawals_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    delete:
+      operationId: order_stock-withdrawals_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this stock withdrawal.
+        required: true
+        type: integer
+  /order/supplier-order-items/:
+    get:
+      operationId: order_supplier-order-items_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_supplier-order-items_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/supplier-order-items/{id}/:
+    get:
+      operationId: order_supplier-order-items_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/SupplierOrderItem'
+      tags:
+        - order
+    put:
+      operationId: order_supplier-order-items_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SupplierOrderItem'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/SupplierOrderItem'
+      tags:
+        - order
+    patch:
+      operationId: order_supplier-order-items_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SupplierOrderItem'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/SupplierOrderItem'
+      tags:
+        - order
+    delete:
+      operationId: order_supplier-order-items_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this supplier order item.
+        required: true
+        type: integer
+  /order/supplier-orders/:
+    get:
+      operationId: order_supplier-orders_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    post:
+      operationId: order_supplier-orders_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /order/supplier-orders/{id}/:
+    get:
+      operationId: order_supplier-orders_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    put:
+      operationId: order_supplier-orders_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    patch:
+      operationId: order_supplier-orders_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    delete:
+      operationId: order_supplier-orders_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this supplier order.
+        required: true
+        type: integer
+  /order/{id}/:
+    get:
+      operationId: order_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    put:
+      operationId: order_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    patch:
+      operationId: order_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - order
+    delete:
+      operationId: order_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - order
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this order.
+        required: true
+        type: integer
+  /stock/:
+    get:
+      operationId: stock_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/accountant-reports/:
+    get:
+      operationId: stock_accountant-reports_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AccountantReport'
+      tags:
+        - stock
+    post:
+      operationId: stock_accountant-reports_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      tags:
+        - stock
+    parameters: []
+  /stock/accountant-reports/{id}/:
+    get:
+      operationId: stock_accountant-reports_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      tags:
+        - stock
+    put:
+      operationId: stock_accountant-reports_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      tags:
+        - stock
+    patch:
+      operationId: stock_accountant-reports_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/AccountantReport'
+      tags:
+        - stock
+    delete:
+      operationId: stock_accountant-reports_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this accountant report.
+        required: true
+        type: integer
+  /stock/bidding-exemption/:
+    get:
+      operationId: stock_bidding-exemption_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_bidding-exemption_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/biddings-exemption/{id}/:
+    get:
+      operationId: stock_biddings-exemption_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_biddings-exemption_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_biddings-exemption_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_biddings-exemption_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this bidding exemption.
+        required: true
+        type: integer
+  /stock/categories/:
+    get:
+      operationId: stock_categories_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Category'
+      tags:
+        - stock
+    post:
+      operationId: stock_categories_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Category'
+      tags:
+        - stock
+    parameters: []
+  /stock/categories/{id}/:
+    get:
+      operationId: stock_categories_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Category'
+      tags:
+        - stock
+    put:
+      operationId: stock_categories_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Category'
+      tags:
+        - stock
+    patch:
+      operationId: stock_categories_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Category'
+      tags:
+        - stock
+    delete:
+      operationId: stock_categories_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this category.
+        required: true
+        type: integer
+  /stock/dispatch-reports/:
+    get:
+      operationId: stock_dispatch-reports_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_dispatch-reports_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/dispatch-reports/{id}/:
+    get:
+      operationId: stock_dispatch-reports_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_dispatch-reports_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_dispatch-reports_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_dispatch-reports_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this dispatch report.
+        required: true
+        type: integer
+  /stock/email/:
+    post:
+      operationId: stock_email_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Email'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Email'
+      tags:
+        - stock
+    parameters: []
+  /stock/invoices/:
+    get:
+      operationId: stock_invoices_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_invoices_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/invoices/{id}/:
+    get:
+      operationId: stock_invoices_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_invoices_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_invoices_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_invoices_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this invoice.
+        required: true
+        type: integer
+  /stock/measures/:
+    get:
+      operationId: stock_measures_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Measure'
+      tags:
+        - stock
+    post:
+      operationId: stock_measures_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Measure'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Measure'
+      tags:
+        - stock
+    parameters: []
+  /stock/measures/{id}/:
+    get:
+      operationId: stock_measures_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Measure'
+      tags:
+        - stock
+    put:
+      operationId: stock_measures_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Measure'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Measure'
+      tags:
+        - stock
+    patch:
+      operationId: stock_measures_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Measure'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Measure'
+      tags:
+        - stock
+    delete:
+      operationId: stock_measures_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this measure.
+        required: true
+        type: integer
+  /stock/products/:
+    get:
+      operationId: stock_products_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_products_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/products/{id}/:
+    get:
+      operationId: stock_products_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_products_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_products_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_products_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this product.
+        required: true
+        type: integer
+  /stock/protocol-items/:
+    get:
+      operationId: stock_protocol-items_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_protocol-items_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/protocol-items/{id}/:
+    get:
+      operationId: stock_protocol-items_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_protocol-items_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_protocol-items_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_protocol-items_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this protocol item.
+        required: true
+        type: integer
+  /stock/protocols/:
+    get:
+      operationId: stock_protocols_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_protocols_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/protocols/{id}/:
+    get:
+      operationId: stock_protocols_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_protocols_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_protocols_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_protocols_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this protocol.
+        required: true
+        type: integer
+  /stock/publicdefenses/:
+    get:
+      operationId: stock_publicdefenses_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PublicDefense'
+      tags:
+        - stock
+    post:
+      operationId: stock_publicdefenses_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      tags:
+        - stock
+    parameters: []
+  /stock/publicdefenses/{id}/:
+    get:
+      operationId: stock_publicdefenses_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      tags:
+        - stock
+    put:
+      operationId: stock_publicdefenses_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      tags:
+        - stock
+    patch:
+      operationId: stock_publicdefenses_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/PublicDefense'
+      tags:
+        - stock
+    delete:
+      operationId: stock_publicdefenses_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this public defense.
+        required: true
+        type: integer
+  /stock/receiving-reports/:
+    get:
+      operationId: stock_receiving-reports_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_receiving-reports_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/receiving-reports/{id}/:
+    get:
+      operationId: stock_receiving-reports_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_receiving-reports_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_receiving-reports_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_receiving-reports_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this receiving report.
+        required: true
+        type: integer
+  /stock/sectors/:
+    get:
+      operationId: stock_sectors_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_sectors_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/sectors/{id}/:
+    get:
+      operationId: stock_sectors_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_sectors_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_sectors_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_sectors_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this sector.
+        required: true
+        type: integer
+  /stock/stock-items/:
+    get:
+      operationId: stock_stock-items_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_stock-items_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/stock-items/{id}/:
+    get:
+      operationId: stock_stock-items_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_stock-items_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_stock-items_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_stock-items_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this stock item.
+        required: true
+        type: integer
+  /stock/stock-report/:
+    get:
+      operationId: stock_stock-report_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/suppliers/:
+    get:
+      operationId: stock_suppliers_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    post:
+      operationId: stock_suppliers_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/suppliers/{id}/:
+    get:
+      operationId: stock_suppliers_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_suppliers_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_suppliers_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_suppliers_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this supplier.
+        required: true
+        type: integer
+  /stock/warehouse-items/:
+    get:
+      operationId: stock_warehouse-items_list
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    parameters: []
+  /stock/{id}/:
+    get:
+      operationId: stock_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    put:
+      operationId: stock_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    patch:
+      operationId: stock_partial_update
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - stock
+    delete:
+      operationId: stock_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - stock
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this stock.
+        required: true
+        type: integer
+definitions:
+  Client:
+    required:
+      - user
+      - name
+      - stock
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      user:
+        title: User
+        type: integer
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+      stock:
+        title: Stock
+        type: integer
+      email:
+        title: Email
+        type: string
+        format: email
+        maxLength: 254
+        minLength: 1
+  AuthToken:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+      token:
+        title: Token
+        type: string
+        readOnly: true
+        minLength: 1
+  MeasureName:
+    required:
+      - name
+    type: object
+    properties:
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+  ProductMe:
+    required:
+      - name
+      - measure
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 200
+        minLength: 1
+      measure:
+        $ref: '#/definitions/MeasureName'
+  SupplierName:
+    required:
+      - name
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+  RetrieveOrderItem:
+    required:
+      - product
+      - supplier
+      - order
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      product:
+        $ref: '#/definitions/ProductMe'
+      supplier:
+        $ref: '#/definitions/SupplierName'
+      quantity:
+        title: Quantity
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      added_quantity:
+        title: Added quantity
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      supplier_quantity:
+        title: Supplier quantity
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      order:
+        title: Order
+        type: integer
+  ProtocolWithdrawal:
+    required:
+      - protocol_item
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      withdraw_quantity:
+        title: Withdraw quantity
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      description:
+        title: Description
+        type: string
+        x-nullable: true
+      withdraw_date:
+        title: Withdraw date
+        type: string
+        format: date-time
+        readOnly: true
+      protocol_item:
+        title: Protocol item
+        type: integer
+  SupplierOrderItem:
+    required:
+      - supplier_order
+      - product
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      quantity:
+        title: Quantity
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      supplier_order:
+        title: Supplier order
+        type: integer
+      product:
+        title: Product
+        type: integer
+  AccountantReport:
+    required:
+      - month
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      month:
+        title: Month
+        type: string
+        minLength: 1
+      total_previous_value:
+        title: Total previous value
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      total_entry_value:
+        title: Total entry value
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      file:
+        title: File
+        type: string
+        readOnly: true
+      total_output_value:
+        title: Total output value
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+      total_current_value:
+        title: Total current value
+        type: integer
+        maximum: 2147483647
+        minimum: 0
+  Category:
+    required:
+      - name
+      - code
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 200
+        minLength: 1
+      code:
+        title: Code
+        type: string
+        maxLength: 200
+        minLength: 1
+  Email:
+    required:
+      - subject
+      - message
+    type: object
+    properties:
+      subject:
+        title: Subject
+        type: string
+        minLength: 1
+      message:
+        title: Message
+        type: string
+        minLength: 1
+  Measure:
+    required:
+      - name
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+  PublicDefense:
+    required:
+      - name
+      - district
+      - address
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      name:
+        title: Name
+        type: string
+        maxLength: 255
+        minLength: 1
+      district:
+        title: District
+        type: string
+        maxLength: 255
+        minLength: 1
+      address:
+        title: Address
+        type: string
+        maxLength: 255
+        minLength: 1

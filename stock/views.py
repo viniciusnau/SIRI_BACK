@@ -4,6 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import boto3
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
 from rest_framework import generics, permissions
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from order.models import StockEntry, StockWithdrawal
+from user.models import Client
 
 from .models import (
     AccountantReport,
@@ -36,6 +38,7 @@ from .serializers import (
     BiddingExemptionSerializer,
     CategorySerializer,
     DispatchReportSerializer,
+    EmailSerializer,
     InvoiceSerializer,
     MeasureSerializer,
     ProductSerializer,
@@ -470,7 +473,9 @@ class BiddingExemptionListCreateView(generics.ListCreateAPIView):
         quantity = int(self.request.data.get("quantity"))
 
         if stock.id != warehouse.id:
-            stock_item = StockItem.objects.get_or_create(product=product, stock=stock)
+            stock_item, created = StockItem.objects.get_or_create(
+                product=product, stock=stock
+            )
             StockEntry.objects.create(stock_item=stock_item, entry_quantity=quantity)
             ReceivingReport.objects.create(
                 product=product, supplier=invoice.supplier, quantity=quantity
@@ -1117,3 +1122,24 @@ class WarehouseItems(APIView):
             response_data.append(item_data)
 
         return Response(response_data)
+
+
+class EmailView(generics.GenericAPIView):
+    serializer_class = EmailSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        subject = serializer.validated_data["subject"]
+        message = serializer.validated_data["message"]
+        recipients = Client.objects.values_list("email", flat=True)
+        from_email = os.environ.get("EMAIL_HOST_USER")
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=message,
+            from_email=from_email,
+            to=recipients,
+            reply_to=[from_email],
+        )
+        email.send()
+        return Response({"message": "Email sent successfully"})

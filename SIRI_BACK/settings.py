@@ -8,11 +8,11 @@ dotenv.load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-sj6#x(7%$5h&-9_b-_t89kgkilcitctb!jigr!wg0tn9wzp63%"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG"))
 
-ALLOWED_HOSTS = ["0.0.0.0"]
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -27,9 +27,11 @@ INSTALLED_APPS = [
     "stock",
     "order",
     "corsheaders",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -37,7 +39,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "SIRI_BACK.urls"
@@ -91,11 +92,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 5,
+    "PAGE_SIZE": 2,
 }
 
 LANGUAGE_CODE = "en-us"

@@ -32,8 +32,18 @@ SECRET_KEY=
 DB_NAME=
 DB_USER=
 DB_PASS=
+DB_HOST=
+DB_PORT=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_BUCKET_NAME=
+AWS_REGION_NAME=
+AWS_EXPIRES_SECONDS=
+DEFAULT_FILE_STORAGE=
 RESTRICTED_DATES=
 DEBUG=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
 ```
 
 Run the server:
@@ -63,7 +73,7 @@ git pull
 ```
 Then control + shift + v into the terminal to create a new branch from developer with the card's name.
 
-After completing the task, make sure to run:
+After completing the task, update Swagger and make sure to run:
 ```bash
 make all
 ```
@@ -76,6 +86,18 @@ Test coverage cannot drop below 99%.
 Create a Pull Request pointing base to developer.
 
 Move the task card to the "review" column.
+
+## Swagger Documentation
+To access documentation, follow these steps:
+
+1. Ensure that the project is running and the API is accessible.
+2. Click the button below to access the backend documentation and interact with the available APIs:
+[![Documentation](https://img.shields.io/badge/Swagger-Documentation-blue.svg)](http://0.0.0.0:8000/swagger)
+3. You will be presented with the Swagger UI, which lists all the available endpoints.
+4. Explore the APIs by expanding the endpoints and clicking on them to view details such as request/response parameters, headers, and example payloads.
+5. To test an endpoint, click on the "Try it out" button, enter the required input parameters, and click "Execute" to see the response.
+6. Feel free to experiment with different inputs and explore the capabilities of the API.
+
 ## How To Run Server
 
 ```bash

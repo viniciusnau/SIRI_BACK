@@ -10,8 +10,6 @@ services:
       - POSTGRES_USER=SIRI_BACK
       - POSTGRES_PASSWORD=SCR@01090!qwer
       - POSTGRES_DB=SIRI_DB_LOCAL
-    volumes:
-      - ./SIRI_DB:/var/lib/postgresql/data
     restart: always
 
   web:
@@ -29,5 +27,4 @@ services:
       - "8000:8000"
     depends_on:
       - db
-
     restart: always

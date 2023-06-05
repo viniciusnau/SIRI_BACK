@@ -1,0 +1,25 @@
+"id","app","name","applied"
+1,contenttypes,"0001_initial",2023-05-08 22:06:59.992 -0300
+2,auth,"0001_initial",2023-05-08 22:07:00.061 -0300
+3,admin,"0001_initial",2023-05-08 22:07:00.075 -0300
+4,admin,"0002_logentry_remove_auto_add",2023-05-08 22:07:00.082 -0300
+5,admin,"0003_logentry_add_action_flag_choices",2023-05-08 22:07:00.088 -0300
+6,contenttypes,"0002_remove_content_type_name",2023-05-08 22:07:00.099 -0300
+7,auth,"0002_alter_permission_name_max_length",2023-05-08 22:07:00.104 -0300
+8,auth,"0003_alter_user_email_max_length",2023-05-08 22:07:00.109 -0300
+9,auth,"0004_alter_user_username_opts",2023-05-08 22:07:00.113 -0300
+10,auth,"0005_alter_user_last_login_null",2023-05-08 22:07:00.117 -0300
+11,auth,"0006_require_contenttypes_0002",2023-05-08 22:07:00.118 -0300
+12,auth,"0007_alter_validators_add_error_messages",2023-05-08 22:07:00.124 -0300
+13,auth,"0008_alter_user_username_max_length",2023-05-08 22:07:00.159 -0300
+14,auth,"0009_alter_user_last_name_max_length",2023-05-08 22:07:00.164 -0300
+15,auth,"0010_alter_group_name_max_length",2023-05-08 22:07:00.169 -0300
+16,auth,"0011_update_proxy_permissions",2023-05-08 22:07:00.173 -0300
+17,auth,"0012_alter_user_first_name_max_length",2023-05-08 22:07:00.177 -0300
+18,authtoken,"0001_initial",2023-05-08 22:07:00.189 -0300
+19,authtoken,"0002_auto_20160226_1747",2023-05-08 22:07:00.202 -0300
+20,authtoken,"0003_tokenproxy",2023-05-08 22:07:00.204 -0300
+21,stock,"0001_initial",2023-05-08 22:07:00.414 -0300
+22,user,"0001_initial",2023-05-08 22:07:00.445 -0300
+23,order,"0001_initial",2023-05-08 22:07:00.619 -0300
+24,sessions,"0001_initial",2023-05-08 22:07:00.630 -0300

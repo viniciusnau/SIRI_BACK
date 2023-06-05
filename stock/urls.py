@@ -9,6 +9,7 @@ from .views import (
     CategoryRetrieveUpdateDestroyView,
     DispatchReportListCreateView,
     DispatchReportRetrieveUpdateDestroyView,
+    EmailView,
     InvoiceListCreateView,
     InvoiceRetrieveUpdateDestroyView,
     MeasureListCreateView,
@@ -148,4 +149,5 @@ urlpatterns = [
     ),
     path("stock-report/", StockReport.as_view(), name="stock_report"),
     path("warehouse-items/", WarehouseItems.as_view(), name="warehouse_items"),
+    path("email/", EmailView.as_view()),
 ]

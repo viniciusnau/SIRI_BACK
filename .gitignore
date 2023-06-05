@@ -136,3 +136,14 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 .idea
+
+SIRI_DB/
+
+#AWS
+aws
+awscliv2.zip
+
+#Migrations
+order/migrations
+stock/migrations
+user/migrations
