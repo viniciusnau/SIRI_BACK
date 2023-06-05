@@ -262,10 +262,10 @@ class BiddingExemption(models.Model):
 
 class AccountantReport(models.Model):
     month = models.TextField(blank=False, null=False)
-    total_previous_value = models.PositiveIntegerField(default=0)
-    total_entry_value = models.PositiveIntegerField(default=0)
-    total_output_value = models.PositiveIntegerField(default=0)
-    total_current_value = models.PositiveIntegerField(default=0)
+    total_previous_value = models.FloatField(default=0.0)
+    total_entry_value = models.FloatField(default=0.0)
+    total_output_value = models.FloatField(default=0.0)
+    total_current_value = models.FloatField(default=0.0)
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(default=timezone.now)
 
