@@ -5,7 +5,7 @@ server-up:
 	docker start SIRI_SERVER
 
 server-down:
-	docker stop SIRI_DATABASE
+	docker stop SIRI_SERVER
 
 db-up:
 	docker start SIRI_DATABASE
