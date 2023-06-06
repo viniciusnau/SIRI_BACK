@@ -297,6 +297,21 @@ class ProtocolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         elif self.request.method in ["PUT", "PATCH"]:
             return ProtocolSerializer
 
+    def perform_update(self, serializer):
+        file_data = self.request.data.get("file")
+        code = self.request.data.get("code")
+
+        if file_data:
+            with tempfile.TemporaryFile() as tmp_file:
+                for chunk in file_data.file:
+                    tmp_file.write(chunk)
+                tmp_file.seek(0)
+                file_path = f"protocols/{code}"
+                client.upload_fileobj(
+                    tmp_file, os.environ.get("AWS_BUCKET_NAME"), file_path
+                )
+
+        serializer.save()
 
 class ProtocolItemListCreateView(generics.ListCreateAPIView):
     queryset = ProtocolItem.objects.all()
