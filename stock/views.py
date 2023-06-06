@@ -425,12 +425,14 @@ class ReceivingReportRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPI
     def perform_update(self, serializer):
         instance = serializer.save()
         file_data = self.request.data.get("file")
-        client.upload_fileobj(
-            file_data,
-            os.environ.get("AWS_BUCKET_NAME"),
-            f"receiving-reports/{instance.id}",
-        )
-        instance.file = str(instance.id)
+        if file_data:
+            client.upload_fileobj(
+                file_data,
+                os.environ.get("AWS_BUCKET_NAME"),
+                f"receiving-reports/{instance.id}",
+            )
+            instance.file = str(instance.id)
+        instance.description = self.request.data.get("description")
         instance.save()
 
     def get_serializer_class(self):
