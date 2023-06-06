@@ -462,12 +462,13 @@ class DispatchReportRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIV
     def perform_update(self, serializer):
         instance = serializer.save()
         file_data = self.request.data.get("file")
-        client.upload_fileobj(
-            file_data,
-            os.environ.get("AWS_BUCKET_NAME"),
-            f"dispatch-reports/{instance.id}",
-        )
-        instance.file = str(instance.id)
+        if file_data:
+            client.upload_fileobj(
+                file_data,
+                os.environ.get("AWS_BUCKET_NAME"),
+                f"dispatch-reports/{instance.id}",
+            )
+            instance.file = str(instance.id)
         instance.save()
 
     def get_serializer_class(self):
