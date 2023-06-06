@@ -157,6 +157,8 @@ class Protocol(models.Model):
     code = models.CharField("Code", null=True, max_length=255)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(default=timezone.now)
 
