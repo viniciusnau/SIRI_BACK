@@ -142,3 +142,7 @@ SIRI_DB/
 #AWS
 aws
 awscliv2.zip
+
+order/migrations
+stock/migrations
+user/migrations
