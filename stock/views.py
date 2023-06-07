@@ -301,6 +301,9 @@ class ProtocolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         file_data = self.request.data.get("file")
         code = self.request.data.get("code")
 
+        if code is None:
+            code = self.get_object().code
+
         if file_data:
             with tempfile.TemporaryFile() as tmp_file:
                 for chunk in file_data.file:
