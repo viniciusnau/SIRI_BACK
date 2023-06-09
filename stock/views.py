@@ -316,6 +316,7 @@ class ProtocolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer.save()
 
+
 class ProtocolItemListCreateView(generics.ListCreateAPIView):
     queryset = ProtocolItem.objects.all()
     serializer_class = RetrieveProtocolItemSerializer
