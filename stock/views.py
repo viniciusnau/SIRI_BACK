@@ -1,3 +1,4 @@
+import io
 import os
 import tempfile
 from datetime import datetime
@@ -300,19 +301,43 @@ class ProtocolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         file_data = self.request.data.get("file")
         code = self.request.data.get("code")
+        file_path = f"protocols/{code}"
+        original_code = self.get_object().code
+        original_file_path = f"protocols/{original_code}"
 
-        if code is None:
-            code = self.get_object().code
-
-        if file_data:
-            with tempfile.TemporaryFile() as tmp_file:
-                for chunk in file_data.file:
-                    tmp_file.write(chunk)
-                tmp_file.seek(0)
-                file_path = f"protocols/{code}"
-                client.upload_fileobj(
-                    tmp_file, os.environ.get("AWS_BUCKET_NAME"), file_path
+        if code:
+            if file_data:
+                client.delete_object(
+                    Bucket=os.environ.get("AWS_BUCKET_NAME"), Key=original_file_path
                 )
+                client.upload_fileobj(
+                    file_data, os.environ.get("AWS_BUCKET_NAME"), file_path
+                )
+            else:
+                client_response = client.get_object(
+                    Bucket=os.environ.get("AWS_BUCKET_NAME"), Key=original_file_path
+                )
+                file_obj = client_response["Body"].read()
+                file_obj_stream = io.BytesIO(file_obj)
+                client.delete_object(
+                    Bucket=os.environ.get("AWS_BUCKET_NAME"), Key=original_file_path
+                )
+                client.upload_fileobj(
+                    file_obj_stream, os.environ.get("AWS_BUCKET_NAME"), file_path
+                )
+
+        else:
+            if file_data:
+                client.delete_object(
+                    Bucket=os.environ.get("AWS_BUCKET_NAME"), Key=original_file_path
+                )
+                client.upload_fileobj(
+                    file_data,
+                    Bucket=os.environ.get("AWS_BUCKET_NAME"),
+                    Key=original_file_path,
+                )
+            else:
+                pass
 
         serializer.save()
 
