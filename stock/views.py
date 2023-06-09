@@ -1,8 +1,8 @@
+import io
 import os
 import tempfile
 from datetime import datetime
 from decimal import Decimal
-import io
 
 import boto3
 from django.core.mail import EmailMultiAlternatives
@@ -332,7 +332,9 @@ class ProtocolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                     Bucket=os.environ.get("AWS_BUCKET_NAME"), Key=original_file_path
                 )
                 client.upload_fileobj(
-                    file_data, Bucket=os.environ.get("AWS_BUCKET_NAME"), Key=original_file_path
+                    file_data,
+                    Bucket=os.environ.get("AWS_BUCKET_NAME"),
+                    Key=original_file_path,
                 )
             else:
                 pass
