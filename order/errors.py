@@ -21,3 +21,11 @@ class MaterialsOrderAlreadyExistsException(
     status_code = 409
     default_detail = "The requested material order already exists"
     default_code = 3
+
+
+class QuantityTooBigException(APIException):
+    status_code = 400
+    default_detail = (
+        "Order item added quantity cannot be bigger than order item quantity"
+    )
+    default_code = 4

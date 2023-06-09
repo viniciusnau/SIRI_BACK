@@ -20,6 +20,7 @@ from stock.models import (
 from .errors import (
     MaterialsOrderAlreadyExistsException,
     OrderAlreadyAddedToStockException,
+    QuantityTooBigException,
     RestrictedDateException,
 )
 from .models import (
@@ -139,6 +140,9 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         added_quantity = serializer.validated_data.get("added_quantity")
         warehouse_stock = Stock.objects.get(id=1)
         user_stock = request.user.client.stock
+
+        if added_quantity > instance.quantity:
+            raise QuantityTooBigException
 
         if instance.added_quantity == 0 and added_quantity:
             stock_item, created = StockItem.objects.get_or_create(
