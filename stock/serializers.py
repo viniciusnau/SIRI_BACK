@@ -105,6 +105,7 @@ class ProductMeSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "measure",
+            "description",
         )
 
 
