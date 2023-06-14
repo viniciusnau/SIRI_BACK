@@ -2,6 +2,7 @@ import datetime
 import os
 
 import boto3
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import Sum
 from django.utils.dateparse import parse_date
 from rest_framework import generics, permissions, status
@@ -16,6 +17,7 @@ from stock.models import (
     StockItem,
     Supplier,
 )
+from user.models import Client
 
 from .errors import (
     MaterialsOrderAlreadyExistsException,
@@ -131,6 +133,20 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RetrieveOrderItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_destroy(self, instance):
+        description = self.request.query_params.get("description")
+        recipient = Client.objects.get(id=instance.order.client.id).email
+        from_email = os.environ.get("EMAIL_HOST_USER")
+        email = EmailMultiAlternatives(
+            subject=f'Item {instance.product.name} do pedido {instance.order.id} NEGADO',
+            body=f'Motivo: {description}',
+            from_email=from_email,
+            to=[recipient],
+            reply_to=[from_email],
+        )
+        email.send()
+        instance.delete()
+
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = OrderItemSerializer(
@@ -141,7 +157,7 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         warehouse_stock = Stock.objects.get(id=1)
         user_stock = request.user.client.stock
 
-        if added_quantity > instance.quantity:
+        if added_quantity and added_quantity > instance.quantity:
             raise QuantityTooBigException
 
         if instance.added_quantity == 0 and added_quantity:
