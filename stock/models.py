@@ -217,6 +217,9 @@ class Invoice(models.Model):
 
 class ReceivingReport(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    stock_item = models.ForeignKey(
+        StockItem, on_delete=models.CASCADE, null=True, default=None, blank=True
+    )
     quantity = models.PositiveIntegerField(default=0)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     file = models.TextField(blank=True, default=None, null=True)
@@ -233,6 +236,9 @@ class ReceivingReport(models.Model):
 
 class DispatchReport(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    stock_item = models.ForeignKey(
+        StockItem, on_delete=models.CASCADE, null=True, default=None, blank=True
+    )
     quantity = models.PositiveIntegerField(default=0)
     public_defense = models.ForeignKey(PublicDefense, on_delete=models.CASCADE)
     file = models.TextField(blank=True, default=None, null=True)

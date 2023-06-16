@@ -523,9 +523,14 @@ class BiddingExemptionListCreateView(generics.ListCreateAPIView):
             stock_item, created = StockItem.objects.get_or_create(
                 product=product, stock=stock
             )
-            StockEntry.objects.create(stock_item=stock_item, entry_quantity=quantity)
+            StockEntry.objects.create(
+                stock_item=stock_item, entry_quantity=quantity, invoice=invoice
+            )
             ReceivingReport.objects.create(
-                product=product, supplier=invoice.supplier, quantity=quantity
+                product=product,
+                supplier=invoice.supplier,
+                quantity=quantity,
+                stock_item=stock_item,
             )
             warehouse_stock_item, created = StockItem.objects.get_or_create(
                 product=product, stock=warehouse
@@ -536,6 +541,7 @@ class BiddingExemptionListCreateView(generics.ListCreateAPIView):
                 public_defense=stock.sector.public_defense,
                 product=product,
                 quantity=quantity,
+                stock_item=stock_item,
             )
             warehouse_stock_item = StockItem.objects.get(id=warehouse_stock_item.id)
             warehouse_stock_item.quantity = warehouse_stock_item.quantity - quantity
@@ -547,7 +553,10 @@ class BiddingExemptionListCreateView(generics.ListCreateAPIView):
             stock_item.quantity = stock_item.quantity + quantity
             stock_item.save(update_fields=["quantity"])
             ReceivingReport.objects.create(
-                product=product, supplier=invoice.supplier, quantity=quantity
+                product=product,
+                supplier=invoice.supplier,
+                quantity=quantity,
+                stock_item=stock_item,
             )
 
         serializer.save()
@@ -563,6 +572,25 @@ class BiddingExemptionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAP
     queryset = BiddingExemption.objects.all()
     serializer_class = BiddingExemptionSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        if instance.stock.id == 1:
+            stock_item = StockItem.objects.get(
+                product=instance.product, stock=instance.stock
+            )
+            stock_item.quantity = stock_item.quantity - instance.quantity
+            stock_item.save(update_fields=["quantity"])
+            ReceivingReport.objects.get(stock_item=stock_item).delete()
+        else:
+            stock_item = StockItem.objects.get(
+                product=instance.product, stock=instance.stock
+            )
+            StockEntry.objects.get(
+                stock_item=stock_item, invoice=instance.invoice
+            ).delete()
+            ReceivingReport.objects.get(stock_item=stock_item).delete()
+            DispatchReport.objects.get(stock_item=stock_item).delete()
+        instance.delete()
 
     def get_serializer_class(self):
         if self.request.method == "GET":

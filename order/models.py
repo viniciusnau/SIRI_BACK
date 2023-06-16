@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from stock.models import (
     Category,
+    Invoice,
     Product,
     Protocol,
     ProtocolItem,
@@ -80,6 +81,9 @@ class StockEntry(models.Model):
         StockItem, related_name="stock_entry", on_delete=models.CASCADE
     )
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, null=True)
+    invoice = models.ForeignKey(
+        Invoice, on_delete=models.CASCADE, null=True, default=None, blank=True
+    )
     entry_quantity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     entry_date = models.DateTimeField(auto_now=True)

@@ -135,16 +135,17 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_destroy(self, instance):
         description = self.request.query_params.get("description")
-        recipient = Client.objects.get(id=instance.order.client.id).email
-        from_email = os.environ.get("EMAIL_HOST_USER")
-        email = EmailMultiAlternatives(
-            subject=f'Item {instance.product.name} do pedido {instance.order.id} NEGADO',
-            body=f'Motivo: {description}',
-            from_email=from_email,
-            to=[recipient],
-            reply_to=[from_email],
-        )
-        email.send()
+        if description:
+            recipient = Client.objects.get(id=instance.order.client.id).email
+            from_email = os.environ.get("EMAIL_HOST_USER")
+            email = EmailMultiAlternatives(
+                subject=f"Item {instance.product.name} do pedido {instance.order.id} NEGADO",
+                body=f"Motivo: {description}",
+                from_email=from_email,
+                to=[recipient],
+                reply_to=[from_email],
+            )
+            email.send()
         instance.delete()
 
     def update(self, request, *args, **kwargs):
