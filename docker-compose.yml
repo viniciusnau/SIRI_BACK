@@ -12,6 +12,36 @@ services:
       - POSTGRES_DB=SIRI_DB_LOCAL
     restart: always
 
+
+  redis:
+    image: redis:latest
+    container_name: SIRI_REDIS
+    ports:
+      - "6379:6379"
+    restart: always
+
+  celery:
+    build: .
+    container_name: SIRI_CELERY
+    command: celery -A SIRI_BACK.celery worker -l INFO
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  celerybeat:
+    build: .
+    container_name: SIRI_CELERYBEAT
+    command: celery -A SIRI_BACK.celery beat -l INFO
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    restart: always
+  
   web:
     build: .
     container_name: SIRI_SERVER
@@ -27,4 +57,5 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
     restart: always

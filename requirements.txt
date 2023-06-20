@@ -43,3 +43,7 @@ tomli==2.0.1
 urllib3==1.26.15
 virtualenv==20.23.0
 drf-yasg
+redis
+celery
+django-celery-beat
+django-celery-results
