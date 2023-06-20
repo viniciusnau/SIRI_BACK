@@ -33,39 +33,46 @@ from .views import (
     StockRetrieveUpdateDestroyView,
     SupplierListCreateView,
     SupplierRetrieveUpdateDestroyView,
-    WarehouseItems,
+    WarehouseItems, AllSuppliersView, AllCategoriesView, AllProductsView, AllPublicDefensesView, AllProtocolsView,
+    ProtocolItemListView, AllMeasuresView, AllInvoicesView, AllStocksView, AllSectorsView,
 )
 
 app_name = "stock"
 
 urlpatterns = [
     path("", StockListCreateView.as_view(), name="stock-list-create"),
+    path("all-stocks/", AllStocksView.as_view(), name="all-stocks"),
     path(
         "<int:pk>/",
         StockRetrieveUpdateDestroyView.as_view(),
         name="stock-retrieve-update-destroy",
     ),
     path("sectors/", SectorListCreateView.as_view(), name="sector-list-create"),
+    path("sectors/all/", AllSectorsView.as_view(), name="all-sectors"),
     path(
         "sectors/<int:pk>/",
         SectorRetrieveUpdateDestroyView.as_view(),
         name="sector-retrieve-update-destroy",
     ),
-    path("publicdefenses/", PublicDefenseListCreateView.as_view()),
-    path("publicdefenses/<int:pk>/", PublicDefenseRetrieveUpdateDestroyView.as_view()),
+    path("public-defenses/", PublicDefenseListCreateView.as_view()),
+    path("public-defenses/all/", AllPublicDefensesView.as_view()),
+    path("public-defenses/<int:pk>/", PublicDefenseRetrieveUpdateDestroyView.as_view()),
     path("categories/", CategoryListCreateView.as_view(), name="category-list-create"),
+    path("categories/all/", AllCategoriesView.as_view(), name="all-categories"),
     path(
         "categories/<int:pk>/",
         CategoryRetrieveUpdateDestroyView.as_view(),
         name="category-retrieve-update-destroy",
     ),
     path("measures/", MeasureListCreateView.as_view(), name="measure-list-create"),
+    path("measures/all/", AllMeasuresView.as_view(), name="all-measures"),
     path(
         "measures/<int:pk>/",
         MeasureRetrieveUpdateDestroyView.as_view(),
         name="measure_retrieve_update_destroy",
     ),
     path("products/", ProductListCreateView.as_view(), name="product-list-create"),
+    path("products/all/", AllProductsView.as_view(), name="all-products"),
     path(
         "products/<int:pk>/",
         ProductRetrieveUpdateDestroyView.as_view(),
@@ -80,12 +87,14 @@ urlpatterns = [
         name="stock-item-detail",
     ),
     path("suppliers/", SupplierListCreateView.as_view(), name="supplier-list-create"),
+    path("suppliers/all/", AllSuppliersView.as_view(), name="all-suppliers"),
     path(
         "suppliers/<int:pk>/",
         SupplierRetrieveUpdateDestroyView.as_view(),
         name="supplier-retrieve-update-destroy",
     ),
     path("protocols/", ProtocolListCreateView.as_view(), name="protocol-list-create"),
+    path("protocols/all/", AllProtocolsView.as_view(), name="all-protocols"),
     path(
         "protocols/<int:pk>/",
         ProtocolRetrieveUpdateDestroyView.as_view(),
@@ -97,11 +106,17 @@ urlpatterns = [
         name="protocol-item-list-create",
     ),
     path(
+        "protocol-items/all/",
+        ProtocolItemListView.as_view(),
+        name="list-protocol-item",
+    ),
+    path(
         "protocol-items/<int:pk>/",
         ProtocolItemRetrieveUpdateDestroyView.as_view(),
         name="protocol-item-retrieve-update-destroy",
     ),
     path("invoices/", InvoiceListCreateView.as_view(), name="invoice-list-create"),
+    path("invoices/all/", AllInvoicesView.as_view(), name="all-invoices"),
     path(
         "invoices/<int:pk>/",
         InvoiceRetrieveUpdateDestroyView.as_view(),

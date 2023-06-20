@@ -33,6 +33,7 @@ from .models import (
     StockItem,
     Supplier,
 )
+from .pagination import CustomPagination
 from .serializers import (
     AccountantReportCategorySerializer,
     AccountantReportSerializer,
@@ -73,6 +74,16 @@ client = boto3.client(
 )
 
 
+class AllStocksView(generics.GenericAPIView):
+    queryset = Stock.objects.all()
+    serializer_class = RetrieveStockSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+
 class StockListCreateView(generics.ListCreateAPIView):
     queryset = Stock.objects.all()
     serializer_class = RetrieveStockSerializer
@@ -95,6 +106,16 @@ class StockRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return RetrieveStockSerializer
         elif self.request.method in ["PUT", "PATCH"]:
             return StockSerializer
+
+
+class AllSectorsView(generics.GenericAPIView):
+    queryset = Sector.objects.all()
+    serializer_class = RetrieveSectorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class SectorListCreateView(generics.ListCreateAPIView):
@@ -121,6 +142,16 @@ class SectorRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return SectorSerializer
 
 
+class AllPublicDefensesView(generics.GenericAPIView):
+    queryset = PublicDefense.objects.all()
+    serializer_class = PublicDefenseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+
 class PublicDefenseListCreateView(generics.ListCreateAPIView):
     queryset = PublicDefense.objects.all()
     serializer_class = PublicDefenseSerializer
@@ -131,6 +162,16 @@ class PublicDefenseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
     queryset = PublicDefense.objects.all()
     serializer_class = PublicDefenseSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class AllCategoriesView(generics.GenericAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class CategoryListCreateView(generics.ListCreateAPIView):
@@ -145,6 +186,16 @@ class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class AllMeasuresView(generics.GenericAPIView):
+    queryset = Measure.objects.all()
+    serializer_class = MeasureSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+
 class MeasureListCreateView(generics.ListCreateAPIView):
     queryset = Measure.objects.all()
     serializer_class = MeasureSerializer
@@ -155,6 +206,16 @@ class MeasureRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Measure.objects.all()
     serializer_class = MeasureSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class AllProductsView(generics.GenericAPIView):
+    queryset = Product.objects.all()
+    serializer_class = RetrieveProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class ProductListCreateView(generics.ListCreateAPIView):
@@ -250,6 +311,16 @@ class SupplierListCreateView(generics.ListCreateAPIView):
             return SupplierSerializer
 
 
+class AllSuppliersView(generics.GenericAPIView):
+    queryset = Supplier.objects.all()
+    serializer_class = RetrieveSupplierSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+
 class SupplierRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Supplier.objects.all()
     serializer_class = RetrieveSupplierSerializer
@@ -260,6 +331,16 @@ class SupplierRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return RetrieveSupplierSerializer
         elif self.request.method in ["PUT", "PATCH"]:
             return SupplierSerializer
+
+
+class AllProtocolsView(generics.GenericAPIView):
+    queryset = Protocol.objects.all()
+    serializer_class = RetrieveProtocolSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class ProtocolListCreateView(generics.ListCreateAPIView):
@@ -342,6 +423,24 @@ class ProtocolRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         serializer.save()
 
 
+class ProtocolItemListView(generics.ListCreateAPIView):
+    queryset = ProtocolItem.objects.all()
+    serializer_class = RetrieveProtocolItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        protocol_id = self.request.query_params.get("protocol_id")
+        if protocol_id:
+            protocol_id = protocol_id.split(",")
+            queryset = queryset.filter(protocol__id__in=protocol_id)
+        for protocol_item in queryset:
+            protocol_item.quantity = get_protocol_item_quantity(protocol_item)
+            protocol_item.save(update_fields=["quantity"])
+        return queryset
+
+
 class ProtocolItemListCreateView(generics.ListCreateAPIView):
     queryset = ProtocolItem.objects.all()
     serializer_class = RetrieveProtocolItemSerializer
@@ -349,10 +448,10 @@ class ProtocolItemListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        protocol_ids = self.request.query_params.get("protocol_id")
-        if protocol_ids:
-            protocol_ids = protocol_ids.split(",")
-            queryset = queryset.filter(protocol__id__in=protocol_ids)
+        protocol_id = self.request.query_params.get("protocol_id")
+        if protocol_id:
+            protocol_id = protocol_id.split(",")
+            queryset = queryset.filter(protocol__id__in=protocol_id)
         for protocol_item in queryset:
             protocol_item.quantity = get_protocol_item_quantity(protocol_item)
             protocol_item.save(update_fields=["quantity"])
@@ -382,6 +481,16 @@ class ProtocolItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVie
             return RetrieveProtocolItemSerializer
         elif self.request.method in ["PUT", "PATCH"]:
             return ProtocolItemSerializer
+
+
+class AllInvoicesView(generics.GenericAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = RetrieveInvoiceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class InvoiceListCreateView(generics.ListCreateAPIView):
