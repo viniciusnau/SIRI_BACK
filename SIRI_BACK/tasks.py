@@ -21,7 +21,7 @@ def verify_end_date():
 
     from_email = os.environ.get("EMAIL_HOST_USER")
 
-    protocol_codes = [protocol.code for protocol i  n protocols]
+    protocol_codes = [protocol.code for protocol in protocols]
 
     protocol_codes_str = "\n".join(protocol_codes)
 
