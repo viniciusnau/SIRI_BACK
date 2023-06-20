@@ -178,7 +178,15 @@ class RetrieveProtocolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Protocol
-        fields = ["id", "code", "start_date", "end_date", "supplier", "category", "file"]
+        fields = [
+            "id",
+            "code",
+            "start_date",
+            "end_date",
+            "supplier",
+            "category",
+            "file",
+        ]
 
 
 class ProtocolSerializer(serializers.ModelSerializer):
@@ -199,7 +207,15 @@ class ProtocolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Protocol
-        fields = ["id", "code", "start_date", "end_date", "supplier", "category", "file"]
+        fields = [
+            "id",
+            "code",
+            "start_date",
+            "end_date",
+            "supplier",
+            "category",
+            "file",
+        ]
 
 
 class ProtocolCodeSerializer(serializers.ModelSerializer):

@@ -257,13 +257,16 @@ class StockItemListCreateView(generics.ListCreateAPIView):
         stock_ids = self.request.query_params.get("stock_id")
         if stock_ids:
             stock_ids = [int(stock_id) for stock_id in stock_ids.split(",")]
-            queryset = StockItem.objects.filter(stock__id__in=stock_ids)
+            queryset = StockItem.objects.filter(stock__id__in=stock_ids).exclude(
+                stock_id=1, quantity=0
+            )
         else:
             queryset = StockItem.objects.all()
-        for stock_item in queryset:
-            if stock_item.stock.id != 1:
-                stock_item.quantity = get_stock_item_quantity(stock_item)
-                stock_item.save(update_fields=["quantity"])
+            queryset = queryset.exclude(quantity=0)
+        for stock_item in queryset.exclude(stock_id=1):
+            stock_item.quantity = get_stock_item_quantity(stock_item)
+            stock_item.save(update_fields=["quantity"])
+
         return queryset
 
     def get_serializer_class(self):
