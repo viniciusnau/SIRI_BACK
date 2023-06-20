@@ -3,6 +3,15 @@ from django.urls import path
 from .views import (
     AccountantReportListCreateView,
     AccountantReportRetrieveUpdateDestroyView,
+    AllCategoriesView,
+    AllInvoicesView,
+    AllMeasuresView,
+    AllProductsView,
+    AllProtocolsView,
+    AllPublicDefensesView,
+    AllSectorsView,
+    AllStocksView,
+    AllSuppliersView,
     BiddingExemptionListCreateView,
     BiddingExemptionRetrieveUpdateDestroyView,
     CategoryListCreateView,
@@ -17,6 +26,7 @@ from .views import (
     ProductListCreateView,
     ProductRetrieveUpdateDestroyView,
     ProtocolItemListCreateView,
+    ProtocolItemListView,
     ProtocolItemRetrieveUpdateDestroyView,
     ProtocolListCreateView,
     ProtocolRetrieveUpdateDestroyView,
@@ -33,8 +43,7 @@ from .views import (
     StockRetrieveUpdateDestroyView,
     SupplierListCreateView,
     SupplierRetrieveUpdateDestroyView,
-    WarehouseItems, AllSuppliersView, AllCategoriesView, AllProductsView, AllPublicDefensesView, AllProtocolsView,
-    ProtocolItemListView, AllMeasuresView, AllInvoicesView, AllStocksView, AllSectorsView,
+    WarehouseItems,
 )
 
 app_name = "stock"
