@@ -129,8 +129,8 @@ CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 CELERY_BEAT_SCHEDULE = {
-    'verificar_end_date': {
-        'task': 'SIRI_BACK.tasks.verificar_end_date',
+    'verify_end_date': {
+        'task': 'SIRI_BACK.tasks.verify_end_date',
         'schedule': crontab(minute=0, hour=0),
     },
 }

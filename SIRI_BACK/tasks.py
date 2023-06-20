@@ -6,7 +6,7 @@ from stock.models import Protocol
 import os
 
 @shared_task
-def verificar_end_date():
+def verify_end_date():
     today = datetime.now()
     ninety_days_later = today + timedelta(days=90)
     

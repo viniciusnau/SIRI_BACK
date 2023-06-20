@@ -1,7 +1,5 @@
 import os
-from celery import Celery
+from .celery import app as celery_app
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SIRI_BACK.settings')
-celery_app = Celery('SIRI_BACK')
-celery_app.config_from_object('django.conf:settings', namespace='CELERY')
-celery_app.autodiscover_tasks()
+__all__ = ['celery_app']
