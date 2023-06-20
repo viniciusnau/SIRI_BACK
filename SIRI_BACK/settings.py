@@ -3,6 +3,7 @@ from pathlib import Path
 
 import corsheaders
 import dotenv
+from celery.schedules import crontab
 
 dotenv.load_dotenv()
 
@@ -28,6 +29,8 @@ INSTALLED_APPS = [
     "order",
     "corsheaders",
     "drf_yasg",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -120,3 +123,14 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+CELERY_IMPORTS = ("SIRI_BACK.tasks",)
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_BEAT_SCHEDULE = {
+    "verify_end_date": {
+        "task": "SIRI_BACK.tasks.verify_end_date",
+        "schedule": crontab(minute=0, hour=0),
+    },
+}
