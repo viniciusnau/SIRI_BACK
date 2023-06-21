@@ -7,6 +7,7 @@ from django.db.models import Sum
 from django.utils.dateparse import parse_date
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from stock.models import (
     Category,
@@ -131,7 +132,7 @@ class OrderItemListCreateView(generics.ListCreateAPIView):
 class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = RetrieveOrderItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def perform_destroy(self, instance):
         description = self.request.query_params.get("description")
@@ -307,7 +308,7 @@ class StockWithdrawalListCreateView(generics.ListCreateAPIView):
 class StockWithdrawalRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StockWithdrawal.objects.all()
     serializer_class = RetrieveStockWithdrawalSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -339,7 +340,7 @@ class StockEntryListCreateView(generics.ListCreateAPIView):
 class StockEntryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StockEntry.objects.all()
     serializer_class = RetrieveStockEntrySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -351,7 +352,7 @@ class StockEntryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
 class SupplierOrderListCreateView(generics.ListCreateAPIView):
     queryset = SupplierOrder.objects.all()
     serializer_class = RetrieveSupplierOrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -371,7 +372,7 @@ class SupplierOrderListCreateView(generics.ListCreateAPIView):
 class SupplierOrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SupplierOrder.objects.all()
     serializer_class = RetrieveSupplierOrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -383,7 +384,7 @@ class SupplierOrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIVi
 class SupplierOrderItemListCreateView(generics.ListCreateAPIView):
     queryset = SupplierOrderItem.objects.all()
     serializer_class = RetrieveSupplierOrderItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
@@ -481,7 +482,7 @@ class SupplierOrderItemListCreateView(generics.ListCreateAPIView):
 class SupplierOrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SupplierOrderItem.objects.all()
     serializer_class = SupplierOrderItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def perform_destroy(self, instance):
         protocol = instance.supplier_order.protocol
@@ -495,7 +496,7 @@ class SupplierOrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyA
 class ProtocolWithdrawalListCreateView(generics.ListCreateAPIView):
     queryset = ProtocolWithdrawal.objects.all()
     serializer_class = RetrieveProtocolWithdrawalSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -517,13 +518,13 @@ class ProtocolWithdrawalRetrieveUpdateDestroyView(
 ):
     queryset = ProtocolWithdrawal.objects.all()
     serializer_class = ProtocolWithdrawalSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
 
 class MaterialsOrderListCreateView(generics.ListCreateAPIView):
     queryset = MaterialsOrder.objects.all()
     serializer_class = RetrieveMaterialsOrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -535,7 +536,7 @@ class MaterialsOrderListCreateView(generics.ListCreateAPIView):
 class MaterialsOrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MaterialsOrder.objects.all()
     serializer_class = RetrieveMaterialsOrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def perform_update(self, serializer):
         instance = serializer.save()
