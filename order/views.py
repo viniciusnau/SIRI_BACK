@@ -6,7 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import Sum
 from django.utils.dateparse import parse_date
 from rest_framework import generics, permissions, status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 from stock.models import (
@@ -132,7 +132,7 @@ class OrderItemListCreateView(generics.ListCreateAPIView):
 class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = RetrieveOrderItemSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_destroy(self, instance):
         description = self.request.query_params.get("description")
@@ -308,7 +308,7 @@ class StockWithdrawalListCreateView(generics.ListCreateAPIView):
 class StockWithdrawalRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StockWithdrawal.objects.all()
     serializer_class = RetrieveStockWithdrawalSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -340,7 +340,7 @@ class StockEntryListCreateView(generics.ListCreateAPIView):
 class StockEntryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StockEntry.objects.all()
     serializer_class = RetrieveStockEntrySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == "GET":

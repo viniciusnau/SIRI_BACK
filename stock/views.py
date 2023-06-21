@@ -9,7 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
 from rest_framework import generics, permissions
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -178,7 +178,7 @@ class AllCategoriesView(generics.GenericAPIView):
 class CategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -241,7 +241,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
 class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -252,7 +252,7 @@ class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 class StockItemListCreateView(generics.ListCreateAPIView):
     serializer_class = RetrieveStockItemSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         stock_ids = self.request.query_params.get("stock_id")
@@ -280,7 +280,7 @@ class StockItemListCreateView(generics.ListCreateAPIView):
 class StockItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StockItem.objects.all()
     serializer_class = StockItemSerializer
-    permission_classes = permission_classes = [IsAdminUser]
+    permission_classes = permission_classes = [permissions.IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
