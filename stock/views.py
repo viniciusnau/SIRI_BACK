@@ -9,9 +9,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
 from rest_framework import generics, permissions
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from order.models import StockEntry, StockWithdrawal
 from user.models import Client
