@@ -257,13 +257,10 @@ class StockItemListCreateView(generics.ListCreateAPIView):
         stock_ids = self.request.query_params.get("stock_id")
         if stock_ids:
             stock_ids = [int(stock_id) for stock_id in stock_ids.split(",")]
-            queryset = StockItem.objects.filter(stock__id__in=stock_ids).exclude(
-                stock_id=1, quantity=0
-            )
+            queryset = StockItem.objects.filter(stock__id__in=stock_ids)
         else:
             queryset = StockItem.objects.all()
-            queryset = queryset.exclude(quantity=0)
-        for stock_item in queryset.exclude(stock_id=1):
+        for stock_item in queryset:
             stock_item.quantity = get_stock_item_quantity(stock_item)
             stock_item.save(update_fields=["quantity"])
 
