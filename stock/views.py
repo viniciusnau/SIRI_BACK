@@ -280,7 +280,7 @@ class StockItemListCreateView(generics.ListCreateAPIView):
 class StockItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = StockItem.objects.all()
     serializer_class = StockItemSerializer
-    permission_classes = permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
