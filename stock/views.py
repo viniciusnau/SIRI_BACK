@@ -809,35 +809,39 @@ class AccountantReportRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAP
     permission_classes = [IsAdminUser]
 
 
-from django.db.models import Q, Sum
-
 def get_stock_entries(initial_date, final_date, product_id, filter_params):
     entry_filters = Q(
         entry_date__gte=initial_date,
         entry_date__lte=final_date,
         stock_item__product_id=product_id,
-        **filter_params
+        **filter_params,
     )
     entry_filters &= ~Q(stock_item__stock_id=1)
     entry_quantity = (
-        StockEntry.objects.filter(entry_filters)
-        .aggregate(Sum("entry_quantity"))["entry_quantity__sum"] or 0
+        StockEntry.objects.filter(entry_filters).aggregate(Sum("entry_quantity"))[
+            "entry_quantity__sum"
+        ]
+        or 0
     )
     return entry_quantity
+
 
 def get_stock_withdrawals(initial_date, final_date, product_id, filter_params):
     withdraw_filters = Q(
         withdraw_date__gte=initial_date,
         withdraw_date__lte=final_date,
         stock_item__product_id=product_id,
-        **filter_params
+        **filter_params,
     )
     withdraw_filters &= ~Q(stock_item__stock_id=1)
     withdrawal_quantity = (
-        StockWithdrawal.objects.filter(withdraw_filters)
-        .aggregate(Sum("withdraw_quantity"))["withdraw_quantity__sum"] or 0
+        StockWithdrawal.objects.filter(withdraw_filters).aggregate(
+            Sum("withdraw_quantity")
+        )["withdraw_quantity__sum"]
+        or 0
     )
     return withdrawal_quantity
+
 
 class StockReport(APIView):
     permission_classes = [IsAdminUser]
@@ -862,17 +866,25 @@ class StockReport(APIView):
             filter_params["stock_item__product__category_id__in"] = categories
 
         if public_defense_ids:
-            filter_params["stock_item__stock__sector__public_defense_id__in"] = public_defense_ids
+            filter_params[
+                "stock_item__stock__sector__public_defense_id__in"
+            ] = public_defense_ids
             for product_id in product_ids:
                 product = Product.objects.get(id=product_id)
                 for public_defense_id in public_defense_ids:
                     public_defense = PublicDefense.objects.get(id=public_defense_id)
-                    filter_params["stock_item__stock__sector__public_defense_id"] = public_defense_id
+                    filter_params[
+                        "stock_item__stock__sector__public_defense_id"
+                    ] = public_defense_id
 
-                    entry_quantity = get_stock_entries(initial_date, final_date, product_id, filter_params)
+                    entry_quantity = get_stock_entries(
+                        initial_date, final_date, product_id, filter_params
+                    )
                     entry_price = product.price * entry_quantity
 
-                    withdrawal_quantity = get_stock_withdrawals(initial_date, final_date, product_id, filter_params)
+                    withdrawal_quantity = get_stock_withdrawals(
+                        initial_date, final_date, product_id, filter_params
+                    )
                     withdrawal_price = product.price * withdrawal_quantity
 
                     response.append(
@@ -898,10 +910,14 @@ class StockReport(APIView):
                         sector = Sector.objects.get(id=sector_id)
                         filter_params["stock_item__stock__sector_id"] = sector_id
 
-                        entry_quantity = get_stock_entries(initial_date, final_date, product_id, filter_params)
+                        entry_quantity = get_stock_entries(
+                            initial_date, final_date, product_id, filter_params
+                        )
                         entry_price = product.price * entry_quantity
 
-                        withdrawal_quantity = get_stock_withdrawals(initial_date, final_date, product_id, filter_params)
+                        withdrawal_quantity = get_stock_withdrawals(
+                            initial_date, final_date, product_id, filter_params
+                        )
                         withdrawal_price = product.price * withdrawal_quantity
 
                         response.append(
@@ -916,10 +932,14 @@ class StockReport(APIView):
                             }
                         )
                 else:
-                    entry_quantity = get_stock_entries(initial_date, final_date, product_id, filter_params)
+                    entry_quantity = get_stock_entries(
+                        initial_date, final_date, product_id, filter_params
+                    )
                     entry_price = product.price * entry_quantity
 
-                    withdrawal_quantity = get_stock_withdrawals(initial_date, final_date, product_id, filter_params)
+                    withdrawal_quantity = get_stock_withdrawals(
+                        initial_date, final_date, product_id, filter_params
+                    )
                     withdrawal_price = product.price * withdrawal_quantity
 
                     response.append(
@@ -934,8 +954,6 @@ class StockReport(APIView):
                     )
 
         return Response(response)
-
-
 
 
 class WarehouseItems(APIView):
