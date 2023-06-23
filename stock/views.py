@@ -809,6 +809,36 @@ class AccountantReportRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAP
     permission_classes = [IsAdminUser]
 
 
+from django.db.models import Q, Sum
+
+def get_stock_entries(initial_date, final_date, product_id, filter_params):
+    entry_filters = Q(
+        entry_date__gte=initial_date,
+        entry_date__lte=final_date,
+        stock_item__product_id=product_id,
+        **filter_params
+    )
+    entry_filters &= ~Q(stock_item__stock_id=1)
+    entry_quantity = (
+        StockEntry.objects.filter(entry_filters)
+        .aggregate(Sum("entry_quantity"))["entry_quantity__sum"] or 0
+    )
+    return entry_quantity
+
+def get_stock_withdrawals(initial_date, final_date, product_id, filter_params):
+    withdraw_filters = Q(
+        withdraw_date__gte=initial_date,
+        withdraw_date__lte=final_date,
+        stock_item__product_id=product_id,
+        **filter_params
+    )
+    withdraw_filters &= ~Q(stock_item__stock_id=1)
+    withdrawal_quantity = (
+        StockWithdrawal.objects.filter(withdraw_filters)
+        .aggregate(Sum("withdraw_quantity"))["withdraw_quantity__sum"] or 0
+    )
+    return withdrawal_quantity
+
 class StockReport(APIView):
     permission_classes = [IsAdminUser]
 
@@ -823,451 +853,89 @@ class StockReport(APIView):
         categories = request.query_params.getlist("category")
         response = []
 
+        filter_params = {}
+
         if product_ids:
-            for product_id in product_ids:
-                product = Product.objects.get(id=product_id)
-                if categories:
-                    if str(product.category_id) in categories:
-                        if public_defense_ids:
-                            for public_defense_id in public_defense_ids:
-                                public_defense = PublicDefense.objects.get(
-                                    id=public_defense_id
-                                )
-                                entry_filters = Q(
-                                    entry_date__gte=initial_date,
-                                    entry_date__lte=final_date,
-                                )
-                                entry_filters &= Q(stock_item__product_id=product_id)
-                                entry_filters &= Q(
-                                    stock_item__stock__sector__public_defense_id=public_defense_id
-                                )
-                                entry_filters &= ~Q(stock_item__stock_id=1)
-                                entry_quantity = (
-                                    StockEntry.objects.filter(entry_filters).aggregate(
-                                        Sum("entry_quantity")
-                                    )["entry_quantity__sum"]
-                                    or 0
-                                )
-                                entry_price = product.price * entry_quantity
+            filter_params["stock_item__product_id__in"] = product_ids
 
-                                withdraw_filters = Q(
-                                    withdraw_date__gte=initial_date,
-                                    withdraw_date__lte=final_date,
-                                )
-                                withdraw_filters &= Q(stock_item__product_id=product_id)
-                                withdraw_filters &= Q(
-                                    stock_item__stock__sector__public_defense_id=public_defense_id
-                                )
-                                withdraw_filters &= ~Q(stock_item__stock_id=1)
-                                withdrawal_quantity = (
-                                    StockWithdrawal.objects.filter(
-                                        withdraw_filters
-                                    ).aggregate(Sum("withdraw_quantity"))[
-                                        "withdraw_quantity__sum"
-                                    ]
-                                    or 0
-                                )
-                                withdrawal_price = product.price * withdrawal_quantity
-
-                                response.append(
-                                    {
-                                        "public_defense": public_defense.name,
-                                        "product_code": product.code,
-                                        "product_name": product.name,
-                                        "entry_quantity": entry_quantity,
-                                        "withdrawal_quantity": withdrawal_quantity,
-                                        "entry_price": entry_price,
-                                        "withdrawal_price": withdrawal_price,
-                                    }
-                                )
-                        else:
-                            for sector_id in sector_ids:
-                                sector = Sector.objects.get(id=sector_id)
-                                entry_filters = Q(
-                                    entry_date__gte=initial_date,
-                                    entry_date__lte=final_date,
-                                )
-                                entry_filters &= Q(stock_item__product_id=product_id)
-                                entry_filters &= Q(
-                                    stock_item__stock__sector_id=sector_id
-                                )
-                                entry_filters &= ~Q(stock_item__stock_id=1)
-                                entry_quantity = (
-                                    StockEntry.objects.filter(entry_filters).aggregate(
-                                        Sum("entry_quantity")
-                                    )["entry_quantity__sum"]
-                                    or 0
-                                )
-                                entry_price = product.price * entry_quantity
-
-                                withdraw_filters = Q(
-                                    withdraw_date__gte=initial_date,
-                                    withdraw_date__lte=final_date,
-                                )
-                                withdraw_filters &= Q(stock_item__product_id=product_id)
-                                withdraw_filters &= Q(
-                                    stock_item__stock__sector_id=sector_id
-                                )
-                                withdraw_filters &= ~Q(stock_item__stock_id=1)
-                                withdrawal_quantity = (
-                                    StockWithdrawal.objects.filter(
-                                        withdraw_filters
-                                    ).aggregate(Sum("withdraw_quantity"))[
-                                        "withdraw_quantity__sum"
-                                    ]
-                                    or 0
-                                )
-                                withdrawal_price = product.price * withdrawal_quantity
-
-                                response.append(
-                                    {
-                                        "sector": sector.name,
-                                        "product_code": product.code,
-                                        "product_name": product.name,
-                                        "entry_quantity": entry_quantity,
-                                        "withdrawal_quantity": withdrawal_quantity,
-                                        "entry_price": entry_price,
-                                        "withdrawal_price": withdrawal_price,
-                                    }
-                                )
-                else:
-                    if public_defense_ids:
-                        for public_defense_id in public_defense_ids:
-                            public_defense = PublicDefense.objects.get(
-                                id=public_defense_id
-                            )
-                            entry_filters = Q(
-                                entry_date__gte=initial_date, entry_date__lte=final_date
-                            )
-                            entry_filters &= Q(stock_item__product_id=product_id)
-                            entry_filters &= Q(
-                                stock_item__stock__sector__public_defense_id=public_defense_id
-                            )
-                            entry_filters &= ~Q(stock_item__stock_id=1)
-                            entry_quantity = (
-                                StockEntry.objects.filter(entry_filters).aggregate(
-                                    Sum("entry_quantity")
-                                )["entry_quantity__sum"]
-                                or 0
-                            )
-                            entry_price = product.price * entry_quantity
-
-                            withdraw_filters = Q(
-                                withdraw_date__gte=initial_date,
-                                withdraw_date__lte=final_date,
-                            )
-                            withdraw_filters &= Q(stock_item__product_id=product_id)
-                            withdraw_filters &= Q(
-                                stock_item__stock__sector__public_defense_id=public_defense_id
-                            )
-                            withdraw_filters &= ~Q(stock_item__stock_id=1)
-                            withdrawal_quantity = (
-                                StockWithdrawal.objects.filter(
-                                    withdraw_filters
-                                ).aggregate(Sum("withdraw_quantity"))[
-                                    "withdraw_quantity__sum"
-                                ]
-                                or 0
-                            )
-                            withdrawal_price = product.price * withdrawal_quantity
-
-                            response.append(
-                                {
-                                    "public_defense": public_defense.name,
-                                    "product_code": product.code,
-                                    "product_name": product.name,
-                                    "entry_quantity": entry_quantity,
-                                    "withdrawal_quantity": withdrawal_quantity,
-                                    "entry_price": entry_price,
-                                    "withdrawal_price": withdrawal_price,
-                                }
-                            )
-                    else:
-                        for sector_id in sector_ids:
-                            sector = Sector.objects.get(id=sector_id)
-                            entry_filters = Q(
-                                entry_date__gte=initial_date, entry_date__lte=final_date
-                            )
-                            entry_filters &= Q(stock_item__product_id=product_id)
-                            entry_filters &= Q(stock_item__stock__sector_id=sector_id)
-                            entry_filters &= ~Q(stock_item__stock_id=1)
-                            entry_quantity = (
-                                StockEntry.objects.filter(entry_filters).aggregate(
-                                    Sum("entry_quantity")
-                                )["entry_quantity__sum"]
-                                or 0
-                            )
-                            entry_price = product.price * entry_quantity
-
-                            withdraw_filters = Q(
-                                withdraw_date__gte=initial_date,
-                                withdraw_date__lte=final_date,
-                            )
-                            withdraw_filters &= Q(stock_item__product_id=product_id)
-                            withdraw_filters &= Q(
-                                stock_item__stock__sector_id=sector_id
-                            )
-                            withdraw_filters &= ~Q(stock_item__stock_id=1)
-                            withdrawal_quantity = (
-                                StockWithdrawal.objects.filter(
-                                    withdraw_filters
-                                ).aggregate(Sum("withdraw_quantity"))[
-                                    "withdraw_quantity__sum"
-                                ]
-                                or 0
-                            )
-                            withdrawal_price = product.price * withdrawal_quantity
-
-                            response.append(
-                                {
-                                    "sector": sector.name,
-                                    "product_code": product.code,
-                                    "product_name": product.name,
-                                    "entry_quantity": entry_quantity,
-                                    "withdrawal_quantity": withdrawal_quantity,
-                                    "entry_price": entry_price,
-                                    "withdrawal_price": withdrawal_price,
-                                }
-                            )
-        else:
-            product_ids = Product.objects.values_list("id", flat=True)
-            for product_id in product_ids:
-                product = Product.objects.get(id=product_id)
-                if categories:
-                    if str(product.category_id) in categories:
-                        if public_defense_ids:
-                            for public_defense_id in public_defense_ids:
-                                public_defense = PublicDefense.objects.get(
-                                    id=public_defense_id
-                                )
-                                entry_filters = Q(
-                                    entry_date__gte=initial_date,
-                                    entry_date__lte=final_date,
-                                )
-                                entry_filters &= Q(stock_item__product_id=product_id)
-                                entry_filters &= Q(
-                                    stock_item__stock__sector__public_defense_id=public_defense_id
-                                )
-                                entry_filters &= ~Q(stock_item__stock_id=1)
-                                entry_quantity = (
-                                    StockEntry.objects.filter(entry_filters).aggregate(
-                                        Sum("entry_quantity")
-                                    )["entry_quantity__sum"]
-                                    or 0
-                                )
-                                entry_price = product.price * entry_quantity
-
-                                withdraw_filters = Q(
-                                    withdraw_date__gte=initial_date,
-                                    withdraw_date__lte=final_date,
-                                )
-                                withdraw_filters &= Q(stock_item__product_id=product_id)
-                                withdraw_filters &= Q(
-                                    stock_item__stock__sector__public_defense_id=public_defense_id
-                                )
-                                withdraw_filters &= ~Q(stock_item__stock_id=1)
-                                withdrawal_quantity = (
-                                    StockWithdrawal.objects.filter(
-                                        withdraw_filters
-                                    ).aggregate(Sum("withdraw_quantity"))[
-                                        "withdraw_quantity__sum"
-                                    ]
-                                    or 0
-                                )
-                                withdrawal_price = product.price * withdrawal_quantity
-
-                                response.append(
-                                    {
-                                        "public_defense": public_defense.name,
-                                        "product_code": product.code,
-                                        "product_name": product.name,
-                                        "entry_quantity": entry_quantity,
-                                        "withdrawal_quantity": withdrawal_quantity,
-                                        "entry_price": entry_price,
-                                        "withdrawal_price": withdrawal_price,
-                                    }
-                                )
-                        else:
-                            for sector_id in sector_ids:
-                                sector = Sector.objects.get(id=sector_id)
-                                entry_filters = Q(
-                                    entry_date__gte=initial_date,
-                                    entry_date__lte=final_date,
-                                )
-                                entry_filters &= Q(stock_item__product_id=product_id)
-                                entry_filters &= Q(
-                                    stock_item__stock__sector_id=sector_id
-                                )
-                                entry_filters &= ~Q(stock_item__stock_id=1)
-                                entry_quantity = (
-                                    StockEntry.objects.filter(entry_filters).aggregate(
-                                        Sum("entry_quantity")
-                                    )["entry_quantity__sum"]
-                                    or 0
-                                )
-                                entry_price = product.price * entry_quantity
-
-                                withdraw_filters = Q(
-                                    withdraw_date__gte=initial_date,
-                                    withdraw_date__lte=final_date,
-                                )
-                                withdraw_filters &= Q(stock_item__product_id=product_id)
-                                withdraw_filters &= Q(
-                                    stock_item__stock__sector_id=sector_id
-                                )
-                                withdraw_filters &= ~Q(stock_item__stock_id=1)
-                                withdrawal_quantity = (
-                                    StockWithdrawal.objects.filter(
-                                        withdraw_filters
-                                    ).aggregate(Sum("withdraw_quantity"))[
-                                        "withdraw_quantity__sum"
-                                    ]
-                                    or 0
-                                )
-                                withdrawal_price = product.price * withdrawal_quantity
-
-                                response.append(
-                                    {
-                                        "sector": sector.name,
-                                        "product_code": product.code,
-                                        "product_name": product.name,
-                                        "entry_quantity": entry_quantity,
-                                        "withdrawal_quantity": withdrawal_quantity,
-                                        "entry_price": entry_price,
-                                        "withdrawal_price": withdrawal_price,
-                                    }
-                                )
-                else:
-                    if public_defense_ids:
-                        for public_defense_id in public_defense_ids:
-                            public_defense = PublicDefense.objects.get(
-                                id=public_defense_id
-                            )
-                            entry_filters = Q(
-                                entry_date__gte=initial_date, entry_date__lte=final_date
-                            )
-                            entry_filters &= Q(stock_item__product_id=product_id)
-                            entry_filters &= Q(
-                                stock_item__stock__sector__public_defense_id=public_defense_id
-                            )
-                            entry_filters &= ~Q(stock_item__stock_id=1)
-                            entry_quantity = (
-                                StockEntry.objects.filter(entry_filters).aggregate(
-                                    Sum("entry_quantity")
-                                )["entry_quantity__sum"]
-                                or 0
-                            )
-                            entry_price = product.price * entry_quantity
-
-                            withdraw_filters = Q(
-                                withdraw_date__gte=initial_date,
-                                withdraw_date__lte=final_date,
-                            )
-                            withdraw_filters &= Q(stock_item__product_id=product_id)
-                            withdraw_filters &= Q(
-                                stock_item__stock__sector__public_defense_id=public_defense_id
-                            )
-                            withdraw_filters &= ~Q(stock_item__stock_id=1)
-                            withdrawal_quantity = (
-                                StockWithdrawal.objects.filter(
-                                    withdraw_filters
-                                ).aggregate(Sum("withdraw_quantity"))[
-                                    "withdraw_quantity__sum"
-                                ]
-                                or 0
-                            )
-                            withdrawal_price = product.price * withdrawal_quantity
-
-                            response.append(
-                                {
-                                    "public_defense": public_defense.name,
-                                    "product_code": product.code,
-                                    "product_name": product.name,
-                                    "entry_quantity": entry_quantity,
-                                    "withdrawal_quantity": withdrawal_quantity,
-                                    "entry_price": entry_price,
-                                    "withdrawal_price": withdrawal_price,
-                                }
-                            )
-                    else:
-                        for sector_id in sector_ids:
-                            sector = Sector.objects.get(id=sector_id)
-                            entry_filters = Q(
-                                entry_date__gte=initial_date, entry_date__lte=final_date
-                            )
-                            entry_filters &= Q(stock_item__product_id=product_id)
-                            entry_filters &= Q(stock_item__stock__sector_id=sector_id)
-                            entry_filters &= ~Q(stock_item__stock_id=1)
-                            entry_quantity = (
-                                StockEntry.objects.filter(entry_filters).aggregate(
-                                    Sum("entry_quantity")
-                                )["entry_quantity__sum"]
-                                or 0
-                            )
-                            entry_price = product.price * entry_quantity
-
-                            withdraw_filters = Q(
-                                withdraw_date__gte=initial_date,
-                                withdraw_date__lte=final_date,
-                            )
-                            withdraw_filters &= Q(stock_item__product_id=product_id)
-                            withdraw_filters &= Q(
-                                stock_item__stock__sector_id=sector_id
-                            )
-                            withdraw_filters &= ~Q(stock_item__stock_id=1)
-                            withdrawal_quantity = (
-                                StockWithdrawal.objects.filter(
-                                    withdraw_filters
-                                ).aggregate(Sum("withdraw_quantity"))[
-                                    "withdraw_quantity__sum"
-                                ]
-                                or 0
-                            )
-                            withdrawal_price = product.price * withdrawal_quantity
-
-                            response.append(
-                                {
-                                    "sector": sector.name,
-                                    "product_code": product.code,
-                                    "product_name": product.name,
-                                    "entry_quantity": entry_quantity,
-                                    "withdrawal_quantity": withdrawal_quantity,
-                                    "entry_price": entry_price,
-                                    "withdrawal_price": withdrawal_price,
-                                }
-                            )
+        if categories:
+            filter_params["stock_item__product__category_id__in"] = categories
 
         if public_defense_ids:
-            output_dict = {}
-            for item in response:
-                key = (item["product_code"], item["public_defense"])
-                if key not in output_dict:
-                    output_dict[key] = item
-                else:
-                    output_dict[key]["entry_quantity"] += item["entry_quantity"]
-                    output_dict[key]["withdrawal_quantity"] += item[
-                        "withdrawal_quantity"
-                    ]
-                    output_dict[key]["entry_price"] += item["entry_price"]
-                    output_dict[key]["withdrawal_price"] += item["withdrawal_price"]
+            filter_params["stock_item__stock__sector__public_defense_id__in"] = public_defense_ids
+            for product_id in product_ids:
+                product = Product.objects.get(id=product_id)
+                for public_defense_id in public_defense_ids:
+                    public_defense = PublicDefense.objects.get(id=public_defense_id)
+                    filter_params["stock_item__stock__sector__public_defense_id"] = public_defense_id
 
-            response = list(output_dict.values())
+                    entry_quantity = get_stock_entries(initial_date, final_date, product_id, filter_params)
+                    entry_price = product.price * entry_quantity
+
+                    withdrawal_quantity = get_stock_withdrawals(initial_date, final_date, product_id, filter_params)
+                    withdrawal_price = product.price * withdrawal_quantity
+
+                    response.append(
+                        {
+                            "public_defense": public_defense.name,
+                            "product_code": product.code,
+                            "product_name": product.name,
+                            "entry_quantity": entry_quantity,
+                            "withdrawal_quantity": withdrawal_quantity,
+                            "entry_price": entry_price,
+                            "withdrawal_price": withdrawal_price,
+                        }
+                    )
         else:
-            output_dict = {}
-            for item in response:
-                key = (item["product_code"], item["sector"])
-                if key not in output_dict:
-                    output_dict[key] = item
-                else:
-                    output_dict[key]["entry_quantity"] += item["entry_quantity"]
-                    output_dict[key]["withdrawal_quantity"] += item[
-                        "withdrawal_quantity"
-                    ]
-                    output_dict[key]["entry_price"] += item["entry_price"]
-                    output_dict[key]["withdrawal_price"] += item["withdrawal_price"]
+            if sector_ids:
+                filter_params["stock_item__stock__sector_id__in"] = sector_ids
 
-            response = list(output_dict.values())
+            for product_id in product_ids:
+                product = Product.objects.get(id=product_id)
+
+                if sector_ids:
+                    for sector_id in sector_ids:
+                        sector = Sector.objects.get(id=sector_id)
+                        filter_params["stock_item__stock__sector_id"] = sector_id
+
+                        entry_quantity = get_stock_entries(initial_date, final_date, product_id, filter_params)
+                        entry_price = product.price * entry_quantity
+
+                        withdrawal_quantity = get_stock_withdrawals(initial_date, final_date, product_id, filter_params)
+                        withdrawal_price = product.price * withdrawal_quantity
+
+                        response.append(
+                            {
+                                "sector": sector.name,
+                                "product_code": product.code,
+                                "product_name": product.name,
+                                "entry_quantity": entry_quantity,
+                                "withdrawal_quantity": withdrawal_quantity,
+                                "entry_price": entry_price,
+                                "withdrawal_price": withdrawal_price,
+                            }
+                        )
+                else:
+                    entry_quantity = get_stock_entries(initial_date, final_date, product_id, filter_params)
+                    entry_price = product.price * entry_quantity
+
+                    withdrawal_quantity = get_stock_withdrawals(initial_date, final_date, product_id, filter_params)
+                    withdrawal_price = product.price * withdrawal_quantity
+
+                    response.append(
+                        {
+                            "product_code": product.code,
+                            "product_name": product.name,
+                            "entry_quantity": entry_quantity,
+                            "withdrawal_quantity": withdrawal_quantity,
+                            "entry_price": entry_price,
+                            "withdrawal_price": withdrawal_price,
+                        }
+                    )
+
         return Response(response)
+
+
 
 
 class WarehouseItems(APIView):

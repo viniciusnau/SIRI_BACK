@@ -18,7 +18,6 @@ from stock.models import (
     StockItem,
     Supplier,
 )
-from user.models import Client
 
 from .errors import (
     MaterialsOrderAlreadyExistsException,
@@ -137,11 +136,15 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         description = self.request.query_params.get("description")
         if description:
-            recipient = Client.objects.get(id=instance.order.client.id).email
+            recipient = instance.order.client.email
             from_email = os.environ.get("EMAIL_HOST_USER")
+            subject = (
+                f"Item {instance.product.name} do pedido {instance.order.id} NEGADO"
+            )
+            body = f"Motivo: {description}"
             email = EmailMultiAlternatives(
-                subject=f"Item {instance.product.name} do pedido {instance.order.id} NEGADO",
-                body=f"Motivo: {description}",
+                subject=subject,
+                body=body,
                 from_email=from_email,
                 to=[recipient],
                 reply_to=[from_email],
@@ -162,24 +165,24 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if added_quantity and added_quantity > instance.quantity:
             raise QuantityTooBigException
 
-        if instance.added_quantity == 0 and added_quantity:
+        if added_quantity:
             stock_item, created = StockItem.objects.get_or_create(
                 product=instance.product, stock=user_stock
             )
             if user_stock.id == warehouse_stock.id:
-                stock_item.quantity = stock_item.quantity + added_quantity
+                stock_item.quantity += added_quantity
                 stock_item.save(update_fields=["quantity"])
                 ReceivingReport.objects.create(
                     supplier=instance.supplier,
                     product=instance.product,
                     quantity=instance.supplier_quantity,
                 )
-            if user_stock.id != warehouse_stock.id:
-                stock_entry = StockEntry.objects.create(
-                    order_item=instance,
-                    stock_item=stock_item,
-                    entry_quantity=added_quantity,
+            else:
+                stock_entry, created = StockEntry.objects.get_or_create(
+                    order_item=instance, stock_item=stock_item
                 )
+                stock_entry.entry_quantity = added_quantity
+                stock_entry.save(update_fields=["entry_quantity"])
                 quantity = stock_entry.entry_quantity - instance.added_quantity
                 if (
                     instance.supplier_quantity
@@ -189,9 +192,7 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                     warehouse_stock_item, created = StockItem.objects.get_or_create(
                         stock=warehouse_stock, product=instance.product
                     )
-                    warehouse_stock_item.quantity = (
-                        warehouse_stock_item.quantity + instance.supplier_quantity
-                    )
+                    warehouse_stock_item.quantity += instance.supplier_quantity
                     warehouse_stock_item.save(update_fields=["quantity"])
                     ReceivingReport.objects.create(
                         supplier=instance.supplier,
@@ -201,55 +202,10 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                 warehouse_stock_item = StockItem.objects.get(
                     stock=warehouse_stock, product=instance.product
                 )
-                warehouse_stock_item.quantity = warehouse_stock_item.quantity - quantity
+                warehouse_stock_item.quantity -= quantity
                 warehouse_stock_item.save(update_fields=["quantity"])
                 DispatchReport.objects.create(
                     product=stock_item.product,
-                    quantity=quantity,
-                    public_defense=stock_entry.stock_item.stock.sector.public_defense,
-                )
-        elif instance.added_quantity != added_quantity and added_quantity:
-            if user_stock.id == warehouse_stock.id:
-                stock_item, created = StockItem.objects.get_or_create(
-                    product=instance.product, stock=warehouse_stock
-                )
-                stock_item.quantity = stock_item.quantity + added_quantity
-                stock_item.save(update_fields=["quantity"])
-                ReceivingReport.objects.create(
-                    supplier=instance.supplier,
-                    product=instance.product,
-                    quantity=instance.supplier_quantity,
-                )
-            if user_stock.id != warehouse_stock.id:
-                stock_entry = StockEntry.objects.get(order_item=instance)
-                stock_entry.entry_quantity = added_quantity
-                stock_entry.save(update_fields=["entry_quantity"])
-                stock_entry = StockEntry.objects.get(order_item=instance)
-                quantity = stock_entry.entry_quantity - instance.added_quantity
-                if (
-                    instance.supplier_quantity
-                    and instance.quantity == added_quantity
-                    and instance.supplier
-                ):
-                    warehouse_stock_item = StockItem.objects.get(
-                        stock=warehouse_stock, product=instance.product
-                    )
-                    warehouse_stock_item.quantity = (
-                        warehouse_stock_item.quantity + instance.supplier_quantity
-                    )
-                    warehouse_stock_item.save(update_fields=["quantity"])
-                    ReceivingReport.objects.create(
-                        supplier=instance.supplier,
-                        product=instance.product,
-                        quantity=instance.supplier_quantity,
-                    )
-                warehouse_stock_item = StockItem.objects.get(
-                    stock=warehouse_stock, product=instance.product
-                )
-                warehouse_stock_item.quantity = warehouse_stock_item.quantity - quantity
-                warehouse_stock_item.save(update_fields=["quantity"])
-                DispatchReport.objects.create(
-                    product=stock_entry.stock_item.product,
                     quantity=quantity,
                     public_defense=stock_entry.stock_item.stock.sector.public_defense,
                 )
@@ -265,14 +221,9 @@ class OrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             order_item.added_quantity != 0 for order_item in order_items
         )
 
-        if all_quantities_added:
-            instance.order.completely_added_to_stock = True
-            instance.order.partially_added_to_stock = False
-            instance.order.is_sent = True
-        elif any_quantity_added:
-            instance.order.partially_added_to_stock = True
-            instance.order.completely_added_to_stock = False
-            instance.order.is_sent = True
+        instance.order.completely_added_to_stock = all_quantities_added
+        instance.order.partially_added_to_stock = any_quantity_added
+        instance.order.is_sent = all_quantities_added or any_quantity_added
 
         instance.order.save(
             update_fields=[
