@@ -262,8 +262,9 @@ class StockItemListCreateView(generics.ListCreateAPIView):
         else:
             queryset = StockItem.objects.all()
         for stock_item in queryset:
-            stock_item.quantity = get_stock_item_quantity(stock_item)
-            stock_item.save(update_fields=["quantity"])
+            if stock_item.stock.id != 1:
+                stock_item.quantity = get_stock_item_quantity(stock_item)
+                stock_item.save(update_fields=["quantity"])
 
         return queryset
 
