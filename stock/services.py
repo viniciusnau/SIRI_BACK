@@ -27,3 +27,25 @@ def get_protocol_item_quantity(protocol_item):
         or 0
     )
     return protocol_item.original_quantity - withdrawals
+
+
+def get_entry_quantity(filters):
+    return (
+        StockEntry.objects.filter(filters).aggregate(Sum("entry_quantity"))[
+            "entry_quantity__sum"
+        ]
+        or 0
+    )
+
+
+def get_withdrawal_quantity(filters):
+    return (
+        StockWithdrawal.objects.filter(filters).aggregate(Sum("withdraw_quantity"))[
+            "withdraw_quantity__sum"
+        ]
+        or 0
+    )
+
+
+def calculate_price(product, quantity):
+    return product.price * quantity
