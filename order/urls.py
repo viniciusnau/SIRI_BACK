@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    AllOrderItemsView,
     MaterialsOrderListCreateView,
     MaterialsOrderRetrieveUpdateDestroyView,
     OrderItemListCreateView,
@@ -31,6 +32,7 @@ urlpatterns = [
     path(
         "order-items/", OrderItemListCreateView.as_view(), name="order-item-list-create"
     ),
+    path("order-items/all/", AllOrderItemsView.as_view(), name="all-order-items"),
     path(
         "order-items/<int:pk>/",
         OrderItemRetrieveUpdateDestroyView.as_view(),
