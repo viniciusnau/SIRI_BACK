@@ -1,5 +1,6 @@
 import datetime
 import os
+import tempfile
 
 import boto3
 from django.core.mail import EmailMultiAlternatives
@@ -87,6 +88,22 @@ class OrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RetrieveOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        file_data = self.request.data.get("file")
+
+        with tempfile.TemporaryFile() as tmp_file:
+            for chunk in file_data.file:
+                tmp_file.write(chunk)
+            tmp_file.seek(0)
+            client.upload_fileobj(
+                tmp_file,
+                os.environ.get("AWS_BUCKET_NAME"),
+                f"confirm-order/{instance.id}",
+            )
+        instance.file = str(instance.id)
+        instance.save()
+
     def perform_destroy(self, instance):
         if instance.partially_added_to_stock or instance.completely_added_to_stock:
             raise OrderAlreadyAddedToStockException()
@@ -97,6 +114,24 @@ class OrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return RetrieveOrderSerializer
         elif self.request.method in ["PUT", "PATCH"]:
             return OrderSerializer
+
+
+class AllOrderItemsView(generics.GenericAPIView):
+    queryset = OrderItem.objects.all()
+    serializer_class = RetrieveOrderItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        order_ids = self.request.query_params.get("order_id")
+        if order_ids:
+            order_ids = order_ids.split(",")
+            queryset = queryset.filter(order__id__in=order_ids)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
 
 
 class OrderItemListCreateView(generics.ListCreateAPIView):

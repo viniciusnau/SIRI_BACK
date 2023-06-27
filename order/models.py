@@ -23,6 +23,7 @@ class Order(models.Model):
     completely_added_to_stock = models.BooleanField(default=False)
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(default=timezone.now)
+    file = models.TextField(blank=True, default=None, null=True)
 
     class Meta:
         ordering = ("-created",)

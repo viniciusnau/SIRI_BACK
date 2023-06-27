@@ -49,6 +49,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class RetrieveOrderSerializer(serializers.ModelSerializer):
     client = ClientNameSerializer()
+    file = serializers.SerializerMethodField()
+
+    def get_file(self, obj):
+        if obj.file:
+            url = client.generate_presigned_url(
+                "get_object",
+                Params={
+                    "Bucket": os.environ.get("AWS_BUCKET_NAME"),
+                    "Key": f"confirm-order/{obj.id}",
+                },
+                ExpiresIn=os.environ.get("AWS_EXPIRES_SECONDS"),
+                HttpMethod="GET",
+            )
+            return url
+        return None
 
     class Meta:
         model = Order
@@ -56,6 +71,20 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    file = serializers.SerializerMethodField()
+
+    def get_file(self, obj):
+        url = client.generate_presigned_url(
+            "get_object",
+            Params={
+                "Bucket": os.environ.get("AWS_BUCKET_NAME"),
+                "Key": f"confirm-order/{obj.id}",
+            },
+            ExpiresIn=os.environ.get("AWS_EXPIRES_SECONDS"),
+            HttpMethod="GET",
+        )
+        return url
+
     class Meta:
         model = Order
         fields = "__all__"
