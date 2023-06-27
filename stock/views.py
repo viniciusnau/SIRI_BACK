@@ -90,6 +90,9 @@ class StockListCreateView(generics.ListCreateAPIView):
     serializer_class = RetrieveStockSerializer
     permission_classes = [IsAdminUser]
 
+    def get_queryset(self):
+        return Stock.objects.order_by("id")
+
     def get_serializer_class(self):
         if self.request.method == "GET":
             return RetrieveStockSerializer
