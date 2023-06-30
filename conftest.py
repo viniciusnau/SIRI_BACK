@@ -2,7 +2,21 @@ import pytest
 from django.contrib.auth.models import User
 from datetime import date, datetime
 
-from order.models import Order, OrderItem
+from user.models import (
+    Client,
+)
+
+from order.models import (
+    Order,
+    OrderItem,
+    StockWithdrawal,
+    StockEntry,
+    SupplierOrder,
+    SupplierOrderItem,
+    ProtocolWithdrawal,
+    MaterialsOrder,
+)
+
 from stock.models import (
     Category,
     Measure,
@@ -21,7 +35,7 @@ from stock.models import (
     BiddingExemption,
     ProtocolItem,
 )
-from user.models import Client
+
 
 
 @pytest.fixture
@@ -172,12 +186,94 @@ def client(stock):
         user=User.objects.all().first(), name="test_client", stock=stock
     )
 
+@pytest.fixture
+def user():
+    return User.objects.create_user(
+        name="user",
+        password="user",
+    )
 
 @pytest.fixture
-def order(requester):
-    return Order.objects.create(requester=requester)
+def super_user():
+    return User.objects.create_superuser(
+        username="admin", email="admin@example.com", password="admin"
+    )
 
 
 @pytest.fixture
-def order_item(order, product):
-    return OrderItem.objects.create(order=order, product=product)
+def client(super_user, stock):
+    return Client.objects.create(
+        user=super_user,
+        name="Test Name",
+        stock=stock,
+        email="test@example.com",
+    )
+
+
+@pytest.fixture
+def order(client):
+    return Order.objects.create(client=client, file="Test File")
+
+
+@pytest.fixture
+def order_item(order, product, supplier):
+    return OrderItem.objects.create(
+        order=order,
+        product=product,
+        quantity=100,
+        supplier=supplier,
+    )
+
+
+@pytest.fixture
+def stock_with_drawal(stock_item):
+    return StockWithdrawal.objects.create(
+        stock_item=stock_item,
+        description="Test Description",
+    )
+
+
+@pytest.fixture
+def stock_entry(stock_item, order_item, invoice):
+    return StockEntry.objects.create(
+        stock_item=stock_item,
+        order_item=order_item,
+        invoice=invoice,
+        description="Test Description",
+    )
+
+
+@pytest.fixture
+def supplier_oder(client, supplier, protocol, public_defense):
+    return SupplierOrder.objects.create(
+        client=client,
+        supplier=supplier,
+        protocol=protocol,
+        public_defense=public_defense,
+    )
+
+
+@pytest.fixture
+def supplier_order_item(supplier_oder, product):
+    return SupplierOrderItem.objects.create(
+        supplier_order=supplier_oder,
+        product=product,
+        quantity=20,
+    )
+
+
+@pytest.fixture
+def protocol_with_drawal(protocol_item):
+    return ProtocolWithdrawal.objects.create(
+        protocol_item=protocol_item,
+        description="Test Description",
+    )
+
+
+@pytest.fixture
+def materials_order(supplier, category):
+    return MaterialsOrder.objects.create(
+        supplier=supplier,
+        category=category,
+        file="Test File",
+    )

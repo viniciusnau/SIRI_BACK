@@ -1,6 +1,5 @@
 import pytest
 
-
 from .models import (
     AccountantReport,
     BiddingExemption,
