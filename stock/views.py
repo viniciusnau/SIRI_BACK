@@ -221,10 +221,11 @@ class AllProductsView(generics.GenericAPIView):
     def get_queryset(self):
         queryset = Product.objects.all()
         protocol_id = self.request.query_params.get("protocol_id")
-        protocol = Protocol.objects.get(id=int(protocol_id))
-        category_id = protocol.category.id
-        if category_id:
-            queryset = queryset.filter(category__id__in=[category_id])
+        if protocol_id:
+            protocol = Protocol.objects.get(id=int(protocol_id))
+            category_id = protocol.category.id
+            if category_id:
+                queryset = queryset.filter(category__id__in=[category_id])
         return queryset
 
     def get(self, request, *args, **kwargs):
