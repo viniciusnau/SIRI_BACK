@@ -1,4 +1,5 @@
 import pytest
+from django.test import TestCase
 
 from .models import (
     AccountantReport,
@@ -18,6 +19,7 @@ from .models import (
     StockItem,
     Supplier,
 )
+
 
 
 @pytest.mark.django_db
