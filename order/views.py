@@ -3,6 +3,7 @@ import os
 import tempfile
 
 import boto3
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Sum
 from django.utils.dateparse import parse_date
@@ -26,6 +27,7 @@ from .errors import (
     OrderAlreadyAddedToStockException,
     QuantityTooBigException,
     RestrictedDateException,
+    SupplierOrderItemAlreadyExistsException,
 )
 from .models import (
     MaterialsOrder,
@@ -422,14 +424,24 @@ class SupplierOrderItemListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAdminUser]
 
     def create(self, request, *args, **kwargs):
+        try:
+            SupplierOrderItem.objects.get(
+                product_id=request.data.get("product"),
+                supplier_order_id=request.data.get("supplier_order"),
+            )
+            raise SupplierOrderItemAlreadyExistsException()
+        except ObjectDoesNotExist:
+            pass
         response = super().create(request, *args, **kwargs)
         supplier_order_item = self.queryset.get(id=response.data["id"])
         protocol = supplier_order_item.supplier_order.protocol
-        protocol_item = ProtocolItem.objects.filter(
+        protocol_item = ProtocolItem.objects.get(
             protocol=protocol, product=supplier_order_item.product
-        ).first()
+        )
         ProtocolWithdrawal.objects.create(
-            withdraw_quantity=supplier_order_item.quantity, protocol_item=protocol_item
+            withdraw_quantity=supplier_order_item.quantity,
+            protocol_item=protocol_item,
+            supplier_order_item=supplier_order_item,
         )
         return response
 
@@ -520,11 +532,7 @@ class SupplierOrderItemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyA
     permission_classes = [IsAdminUser]
 
     def perform_destroy(self, instance):
-        protocol = instance.supplier_order.protocol
-        protocol_item = ProtocolItem.objects.filter(
-            protocol=protocol, product=instance.product
-        ).first()
-        ProtocolWithdrawal.objects.get(protocol_item=protocol_item).delete()
+        ProtocolWithdrawal.objects.get(supplier_order_item=instance).delete()
         instance.delete()
 
 

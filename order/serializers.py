@@ -57,8 +57,8 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
             bucket_name = os.environ.get("AWS_BUCKET_NAME")
             key = f"confirm-order/{obj.id}"
             file_obj = client.get_object(Bucket=bucket_name, Key=key)
-            file_content = file_obj['Body'].read()
-            encoded_file = base64.b64encode(file_content).decode('utf-8')
+            file_content = file_obj["Body"].read()
+            encoded_file = base64.b64encode(file_content).decode("utf-8")
             return encoded_file
         return None
 

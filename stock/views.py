@@ -5,6 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import boto3
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
@@ -15,8 +16,11 @@ from rest_framework.views import APIView
 
 from order.models import StockEntry, StockWithdrawal
 from user.models import Client
-from .errors import SupplierCannotBeDestroyedException
 
+from .errors import (
+    ProtocolItemAlreadyExistsException,
+    SupplierCannotBeDestroyedException,
+)
 from .models import (
     AccountantReport,
     BiddingExemption,
@@ -468,6 +472,17 @@ class ProtocolItemListCreateView(generics.ListCreateAPIView):
     queryset = ProtocolItem.objects.all()
     serializer_class = RetrieveProtocolItemSerializer
     permission_classes = [IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            ProtocolItem.objects.get(
+                product_id=request.data.get("product"),
+                protocol_id=request.data.get("protocol"),
+            )
+            raise ProtocolItemAlreadyExistsException()
+        except ObjectDoesNotExist:
+            pass
+        return super().create(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()
