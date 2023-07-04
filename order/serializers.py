@@ -1,3 +1,4 @@
+import base64
 import os
 
 import boto3
@@ -53,16 +54,12 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
 
     def get_file(self, obj):
         if obj.file:
-            url = client.generate_presigned_url(
-                "get_object",
-                Params={
-                    "Bucket": os.environ.get("AWS_BUCKET_NAME"),
-                    "Key": f"confirm-order/{obj.id}",
-                },
-                ExpiresIn=os.environ.get("AWS_EXPIRES_SECONDS"),
-                HttpMethod="GET",
-            )
-            return url
+            bucket_name = os.environ.get("AWS_BUCKET_NAME")
+            key = f"confirm-order/{obj.id}"
+            file_obj = client.get_object(Bucket=bucket_name, Key=key)
+            file_content = file_obj["Body"].read()
+            encoded_file = base64.b64encode(file_content).decode("utf-8")
+            return encoded_file
         return None
 
     class Meta:

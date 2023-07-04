@@ -29,3 +29,9 @@ class QuantityTooBigException(APIException):
         "Order item added quantity cannot be bigger than order item quantity"
     )
     default_code = 4
+
+
+class SupplierOrderItemAlreadyExistsException(APIException):
+    status_code = 400
+    default_detail = "The requested supplier order item already exists"
+    default_code = 6

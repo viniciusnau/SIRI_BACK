@@ -140,6 +140,9 @@ class ProtocolWithdrawal(models.Model):
     protocol_item = models.ForeignKey(
         ProtocolItem, related_name="protocol_withdraw", on_delete=models.CASCADE
     )
+    supplier_order_item = models.ForeignKey(
+        SupplierOrderItem, on_delete=models.CASCADE, null=True, blank=True, default=None
+    )
     withdraw_quantity = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True, null=True)
     withdraw_date = models.DateTimeField(auto_now=True)

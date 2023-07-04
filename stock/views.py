@@ -5,6 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import boto3
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import F, FloatField, Q, Sum
 from django.db.models.functions import Cast
@@ -16,6 +17,10 @@ from rest_framework.views import APIView
 from order.models import StockEntry, StockWithdrawal
 from user.models import Client
 
+from .errors import (
+    ProtocolItemAlreadyExistsException,
+    SupplierCannotBeDestroyedException,
+)
 from .models import (
     AccountantReport,
     BiddingExemption,
@@ -217,6 +222,16 @@ class AllProductsView(generics.GenericAPIView):
     serializer_class = RetrieveProductSerializer
     permission_classes = [IsAdminUser]
 
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        protocol_id = self.request.query_params.get("protocol_id")
+        if protocol_id:
+            protocol = Protocol.objects.get(id=int(protocol_id))
+            category_id = protocol.category.id
+            if category_id:
+                queryset = queryset.filter(category__id__in=[category_id])
+        return queryset
+
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data)
@@ -330,6 +345,13 @@ class SupplierRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Supplier.objects.all()
     serializer_class = RetrieveSupplierSerializer
     permission_classes = [IsAdminUser]
+
+    def perform_destroy(self, instance):
+        protocols = Protocol.objects.filter(supplier=instance.id)
+        invoices = Invoice.objects.filter(supplier=instance.id)
+        if protocols or invoices:
+            raise SupplierCannotBeDestroyedException()
+        instance.delete()
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -450,6 +472,17 @@ class ProtocolItemListCreateView(generics.ListCreateAPIView):
     queryset = ProtocolItem.objects.all()
     serializer_class = RetrieveProtocolItemSerializer
     permission_classes = [IsAdminUser]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            ProtocolItem.objects.get(
+                product_id=request.data.get("product"),
+                protocol_id=request.data.get("protocol"),
+            )
+            raise ProtocolItemAlreadyExistsException()
+        except ObjectDoesNotExist:
+            pass
+        return super().create(request, *args, **kwargs)
 
     def get_queryset(self):
         queryset = super().get_queryset()
