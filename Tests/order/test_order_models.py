@@ -1,6 +1,6 @@
 import pytest
 
-from .models import (
+from order.models import (
     MaterialsOrder,
     Order,
     OrderItem,
@@ -39,7 +39,7 @@ def test_supplier_order(supplier_oder):
 @pytest.mark.django_db
 def test_supplier_order_item(supplier_order_item):
     assert isinstance(supplier_order_item, SupplierOrderItem)
-    assert str(supplier_order_item) == f"SupplierOrderItem {supplier_order_item.id}" 
+    assert str(supplier_order_item) == f"SupplierOrderItem {supplier_order_item.id}"
 
 @pytest.mark.django_db
 def test_protocol_with_drawal(protocol_with_drawal):

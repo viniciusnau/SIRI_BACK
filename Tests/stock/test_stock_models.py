@@ -1,7 +1,6 @@
 import pytest
-from django.test import TestCase
 
-from .models import (
+from stock.models import (
     AccountantReport,
     BiddingExemption,
     Category,
@@ -21,10 +20,10 @@ from .models import (
 )
 
 
-
 @pytest.mark.django_db
 def test_public_defense(public_defense):
     assert isinstance(public_defense, PublicDefense)
+    assert public_defense.id == 1
     assert str(public_defense) == "Test Public Defense"
 
 
