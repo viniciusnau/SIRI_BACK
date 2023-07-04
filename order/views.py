@@ -93,17 +93,17 @@ class OrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         instance = serializer.save()
         file_data = self.request.data.get("file")
-
-        with tempfile.TemporaryFile() as tmp_file:
-            for chunk in file_data.file:
-                tmp_file.write(chunk)
-            tmp_file.seek(0)
-            client.upload_fileobj(
-                tmp_file,
-                os.environ.get("AWS_BUCKET_NAME"),
-                f"confirm-order/{instance.id}",
-            )
-        instance.file = str(instance.id)
+        if file_data:
+            with tempfile.TemporaryFile() as tmp_file:
+                for chunk in file_data.file:
+                    tmp_file.write(chunk)
+                tmp_file.seek(0)
+                client.upload_fileobj(
+                    tmp_file,
+                    os.environ.get("AWS_BUCKET_NAME"),
+                    f"confirm-order/{instance.id}",
+                )
+            instance.file = str(instance.id)
         instance.save()
 
     def perform_destroy(self, instance):
