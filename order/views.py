@@ -20,6 +20,7 @@ from stock.models import (
     StockItem,
     Supplier,
 )
+from stock.pagination import SupplierOrderItemPagination
 from user.models import Client
 
 from .errors import (
@@ -452,13 +453,15 @@ class SupplierOrderItemListCreateView(generics.ListCreateAPIView):
         category_id = self.request.query_params.get("category_id")
 
         if not (supplier_id and initial_date and final_date and category_id):
+            self.pagination_class = SupplierOrderItemPagination
             queryset = super().get_queryset()
             supplier_order_ids = self.request.query_params.get("supplier_order_id")
             if supplier_order_ids:
                 supplier_order_ids = supplier_order_ids.split(",")
                 queryset = queryset.filter(supplier_order__id__in=supplier_order_ids)
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
+            paginated_queryset = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(paginated_queryset, many=True)
+            return self.get_paginated_response(serializer.data)
         try:
             supplier = Supplier.objects.get(id=supplier_id)
             initial_date = parse_date(initial_date)

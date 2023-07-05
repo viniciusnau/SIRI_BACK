@@ -39,7 +39,7 @@ from .models import (
     StockItem,
     Supplier,
 )
-from .pagination import CustomPagination
+from .pagination import InfinitePagination
 from .serializers import (
     AccountantReportCategorySerializer,
     AccountantReportSerializer,
@@ -454,7 +454,7 @@ class ProtocolItemListView(generics.ListCreateAPIView):
     queryset = ProtocolItem.objects.all()
     serializer_class = RetrieveProtocolItemSerializer
     permission_classes = [IsAdminUser]
-    pagination_class = CustomPagination
+    pagination_class = InfinitePagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
