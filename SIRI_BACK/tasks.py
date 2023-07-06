@@ -19,10 +19,11 @@ def verify_end_date():
     protocol_codes = [protocol.code for protocol in protocols]
     protocol_codes_str = "\n".join(protocol_codes)
 
-    send_mail(
-        "Alerta Final de Vingência de Ata",
-        f"Os seguintes protocolos estão a noventa dias do final de suas vingências:\n{protocol_codes_str}",
-        from_email,
-        recipient_list,
-        fail_silently=False,
-    )
+    if protocols:
+        send_mail(
+            "Alerta Final de Vingência de Ata",
+            f"Os seguintes protocolos estão a noventa dias do final de suas vingências:\n{protocol_codes_str}",
+            from_email,
+            recipient_list,
+            fail_silently=False,
+        )
