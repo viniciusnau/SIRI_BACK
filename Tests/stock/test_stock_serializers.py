@@ -1,5 +1,4 @@
 import pytest
-import datetime
 from decimal import Decimal
 
 from stock.serializers import (
@@ -37,6 +36,7 @@ from stock.serializers import (
     StockSerializer,
     SupplierNameSerializer,
     SupplierSerializer,
+    client
 )
 
 
@@ -237,6 +237,7 @@ def test_stock_item_me_serializer(stock_item):
     expected_data["updated"] = expected_data["updated"].replace("+0000", "Z")
 
     assert serializer.data == expected_data
+    assert RetrieveStockSerializer(stock_item.stock).data == serializer.get_stock(stock_item)
 
 
 @pytest.mark.django_db
@@ -295,12 +296,13 @@ def test_supplier_name_serializer(supplier):
 @pytest.mark.django_db
 def test_retrieve_protocol_serializer(protocol, monkeypatch):
     serializer = RetrieveProtocolSerializer(protocol)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{protocol.code}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{protocol.code}"
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = protocol.code
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
-
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
 
     expected_data = {
         "id": protocol.id,
@@ -314,17 +316,21 @@ def test_retrieve_protocol_serializer(protocol, monkeypatch):
 
     assert serializer.data == expected_data
     assert serializer.get_file(protocol) == expected_url
+    
 
 
 @pytest.mark.django_db
 def test_protocol_serializer(protocol, monkeypatch):
     serializer = ProtocolSerializer(protocol)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{protocol.code}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{protocol.code}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = protocol.code
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
+
 
     expected_data = {
         "id": protocol.id,
@@ -384,12 +390,14 @@ def test_protocol_item_serializer(protocol_item):
 @pytest.mark.django_db
 def test_retrieve_invoice_serializer(invoice, monkeypatch):
     serializer = RetrieveInvoiceSerializer(invoice)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{invoice.code}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{invoice.code}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = invoice.code
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": invoice.id,
         "total_value": str(Decimal(str(invoice.total_value)).quantize(Decimal("0.00"))),
@@ -409,12 +417,14 @@ def test_retrieve_invoice_serializer(invoice, monkeypatch):
 @pytest.mark.django_db
 def test_invoice_serializer(invoice, monkeypatch):
     serializer = InvoiceSerializer(invoice)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{invoice.code}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{invoice.code}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = invoice.code
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": invoice.id,
         "total_value": f"{invoice.total_value:.2f}",
@@ -434,12 +444,15 @@ def test_invoice_serializer(invoice, monkeypatch):
 @pytest.mark.django_db
 def test_retrieve_receiving_report_serializer(receiving_report, monkeypatch):
     serializer = RetrieveReceivingReportSerializer(receiving_report)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{receiving_report.id}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{receiving_report.id}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = receiving_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": receiving_report.id,
         "product": ProductMeSerializer(receiving_report.product).data,
@@ -456,15 +469,48 @@ def test_retrieve_receiving_report_serializer(receiving_report, monkeypatch):
     assert serializer.data == expected_data
     assert serializer.get_file(receiving_report) == expected_url
 
+
+@pytest.mark.django_db
+def test_retrieve_receiving_report_serializer_with_none_file(receiving_report, monkeypatch):
+    serializer = RetrieveReceivingReportSerializer(receiving_report)
+
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = receiving_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
+
+
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
+
+    receiving_report.file = False
+    receiving_report.save()
+    expected_data = {
+        "id": receiving_report.id,
+        "product": ProductMeSerializer(receiving_report.product).data,
+        "quantity": receiving_report.quantity,
+        "supplier": SupplierNameSerializer(receiving_report.supplier).data,
+        "file": None,
+        "description": receiving_report.description,
+        "created": receiving_report.created.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+        "updated": receiving_report.updated.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+    }
+    expected_data["created"] = expected_data["created"].replace("+0000", "Z")
+    expected_data["updated"] = expected_data["updated"].replace("+0000", "Z")
+
+    assert serializer.data == expected_data
+    assert serializer.get_file(receiving_report) is None
+
 @pytest.mark.django_db
 def test_receiving_report_serializer(receiving_report, monkeypatch):
     serializer = ReceivingReportSerializer(receiving_report)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{receiving_report.id}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{receiving_report.id}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = receiving_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": receiving_report.id,
         "product": receiving_report.product.id,
@@ -482,14 +528,45 @@ def test_receiving_report_serializer(receiving_report, monkeypatch):
     assert serializer.get_file(receiving_report) == expected_url
 
 @pytest.mark.django_db
+def test_receiving_report_serializer_with_none_file(receiving_report, monkeypatch):
+    serializer = ReceivingReportSerializer(receiving_report)
+
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = receiving_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
+
+
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
+
+    receiving_report.file = False
+    receiving_report.save()
+    expected_data = {
+        "id": receiving_report.id,
+        "product": receiving_report.product.id,
+        "quantity": receiving_report.quantity,
+        "supplier": receiving_report.supplier.id,
+        "file": None,
+        "description": receiving_report.description,
+        "created": receiving_report.created.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+        "updated": receiving_report.updated.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+    }
+    expected_data["created"] = expected_data["created"].replace("+0000", "Z")
+    expected_data["updated"] = expected_data["updated"].replace("+0000", "Z")
+
+    assert serializer.data == expected_data
+    assert serializer.get_file(receiving_report) is None
+@pytest.mark.django_db
 def test_retrieve_dispatch_report_serializer(dispatch_report, monkeypatch):
     serializer = RetrieveDispatchReportSerializer(dispatch_report)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{dispatch_report.id}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{dispatch_report.id}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = dispatch_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": dispatch_report.id,
         "product": ProductMeSerializer(dispatch_report.product).data,
@@ -505,15 +582,48 @@ def test_retrieve_dispatch_report_serializer(dispatch_report, monkeypatch):
 
     assert serializer.data == expected_data
     assert serializer.get_file(dispatch_report) == expected_url
+
+@pytest.mark.django_db
+def test_retrieve_dispatch_report_serializer_with_none_file(dispatch_report, monkeypatch):
+    serializer = RetrieveDispatchReportSerializer(dispatch_report)
+
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = dispatch_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
+
+
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
+
+    dispatch_report.file = False
+    dispatch_report.save()
+    expected_data = {
+        "id": dispatch_report.id,
+        "product": ProductMeSerializer(dispatch_report.product).data,
+        "quantity": dispatch_report.quantity,
+        "public_defense": PublicDefenseSerializer(dispatch_report.public_defense).data,
+        "file": None,
+        "description": dispatch_report.description,
+        "created": dispatch_report.created.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+        "updated": dispatch_report.updated.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+    }
+    expected_data["created"] = expected_data["created"].replace("+0000", "Z")
+    expected_data["updated"] = expected_data["updated"].replace("+0000", "Z")
+
+    assert serializer.data == expected_data
+    assert serializer.get_file(dispatch_report) is None
+
 @pytest.mark.django_db
 def test_dispatch_report_serializer(dispatch_report, monkeypatch):
     serializer = DispatchReportSerializer(dispatch_report)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{dispatch_report.id}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{dispatch_report.id}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = dispatch_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": dispatch_report.id,
         "product": dispatch_report.product.id,
@@ -529,6 +639,36 @@ def test_dispatch_report_serializer(dispatch_report, monkeypatch):
 
     assert serializer.data == expected_data
     assert serializer.get_file(dispatch_report) == expected_url
+
+@pytest.mark.django_db
+def test_dispatch_report_serializer_with_none_file(dispatch_report, monkeypatch):
+    serializer = DispatchReportSerializer(dispatch_report)
+
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = dispatch_report.id
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
+
+
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
+
+    dispatch_report.file = False
+    dispatch_report.save()
+    expected_data = {
+        "id": dispatch_report.id,
+        "product": dispatch_report.product.id,
+        "quantity": dispatch_report.quantity,
+        "public_defense": dispatch_report.public_defense.id,
+        "file": None,
+        "description": dispatch_report.description,
+        "created": dispatch_report.created.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+        "updated": dispatch_report.updated.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+    }
+    expected_data["created"] = expected_data["created"].replace("+0000", "Z")
+    expected_data["updated"] = expected_data["updated"].replace("+0000", "Z")
+
+    assert serializer.data == expected_data
+    assert serializer.get_file(dispatch_report) is None
 
 @pytest.mark.django_db
 def test_invoice_code_serializer(invoice):
@@ -576,12 +716,14 @@ def test_bidding_exemption_serializer(bidding_exemption):
 @pytest.mark.django_db
 def test_accountant_report_serializer(accountant_report, monkeypatch):
     serializer = AccountantReportSerializer(accountant_report)
-    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{accountant_report.month}?AWSAccessKeyId=AKIA23MFNYI3HNN4N4ZT&Signature=HMoGyIfsTDkOtq2u3klQnPoPbBI%3D&Expires=1688495698"
+    expected_url = f"https://local-sed.s3.amazonaws.com/protocols/{accountant_report.month}"
 
-    def mock_generate_presigned_url(*args, **kwargs):
-        return expected_url
+    def generate_presigned_url_mock(*args, **kwargs):
+        code = accountant_report.month
+        url = f"https://local-sed.s3.amazonaws.com/protocols/{code}"
+        return url
 
-    monkeypatch.setattr(serializer, 'get_file', mock_generate_presigned_url)
+    monkeypatch.setattr(client, "generate_presigned_url", generate_presigned_url_mock)
     expected_data = {
         "id": accountant_report.id,
         "month": accountant_report.month,

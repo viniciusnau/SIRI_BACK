@@ -1,4 +1,10 @@
+import boto3
+import os
+
+import botocore.client
 import pytest
+from moto import mock_s3, mock_sqs
+
 from django.contrib.auth.models import User
 from datetime import date, datetime
 
@@ -36,6 +42,15 @@ from stock.models import (
     ProtocolItem,
 )
 
+@pytest.fixture(autouse=True)
+def setup_environment_variables(monkeypatch):
+    monkeypatch.setenv("AWS_BUCKET_NAME", "test_bucket")
+    monkeypatch.setenv("AWS_EXPIRES_SECONDS", "3600")
+    monkeypatch.setenv("AWS_REGION_NAME", "eu-north-1")
+    monkeypatch.setenv("AWS_ACESS_KEY_ID", "test_acess_key")
+    monkeypatch.setenv("AWS_SECRET_ACESS_KEY", "test_secret_acess_key")
+    monkeypatch.setenv("DATABASE_HOST", "test_host"),
+    monkeypatch.setenv("DATABASE_PORT", "5432")
 
 
 @pytest.fixture
@@ -44,10 +59,21 @@ def public_defense():
         name="Test Public Defense", district="Test District", address="Test Address"
     )
 
+@pytest.fixture
+def public_defense_extra():
+    return PublicDefense.objects.create(
+        name="Test Public Defense Extra", district="Test District Extra", address="Test Address Extra"
+    )
+
+
 
 @pytest.fixture
 def sector(public_defense):
     return Sector.objects.create(name="Test Sector", public_defense=public_defense)
+
+@pytest.fixture
+def sector_extra(public_defense_extra):
+    return Sector.objects.create(name="Test Sector Extra", public_defense=public_defense_extra)
 
 
 @pytest.fixture
@@ -56,6 +82,11 @@ def stock(sector):
         sector=sector,
     )
 
+@pytest.fixture
+def stock_extra(sector_extra):
+    return Stock.objects.create(
+        sector=sector_extra,
+    )
 
 @pytest.fixture
 def category(sector):
@@ -189,7 +220,7 @@ def client(stock):
 @pytest.fixture
 def user():
     return User.objects.create_user(
-        name="user",
+        username="user",
         password="user",
     )
 
@@ -277,3 +308,17 @@ def materials_order(supplier, category):
         category=category,
         file="Test File",
     )
+
+@pytest.fixture
+def patch_stock_objects_all(monkeypatch, stock, stock_extra):
+    def mock_all(*args, **kwargs):
+        return [stock, stock_extra]
+
+    monkeypatch.setattr(Stock.objects, "all", mock_all)
+
+@pytest.fixture
+def patch_stock_objects_order_by_id(monkeypatch, stock, stock_extra):
+    def mock_order_by(*args, **kwargs):
+        return [stock, stock_extra]
+
+    monkeypatch.setattr(Stock.objects, "order_by", mock_order_by)
