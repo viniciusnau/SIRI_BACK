@@ -36,6 +36,7 @@ def test_sector(sector):
 @pytest.mark.django_db
 def test_stock(stock):
     assert isinstance(stock, Stock)
+    assert stock.id == 1
     assert str(stock) == f"{stock.sector} - {stock.sector.public_defense}"
 
 
